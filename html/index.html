@@ -13,8 +13,8 @@
 <body>
     <div id="inputContainer">
         <form id="graphForm">
-            <input type="button" onclick="buildGraph()" value="Build Graph"> 
-            <input type="button" onclick="addInput()" value="Add Connection"> 
+            <input type="button" onclick="buildGraph()" value="Build Graph">
+            <input type="button" onclick="addInput()" value="Add Connection">
             <input type="button" onclick="removeInput()" value="Remove Connection"> <br>
 
             <div>
@@ -32,11 +32,15 @@
     </div>
     <script>
         const graphForm = document.getElementById('graphForm');
+        const graphContainer = document.getElementById('graphContainer');
+
         var numInput = 1;
         function addInput() {
             numInput++;
 
+            //Create Div called newDiv
             let newDiv = document.createElement("div");
+
             //Vertice 1 (From) Input
             let verticeFrom = document.createElement("input");
             var verticeFromID = "verticeFrom".concat(numInput);
@@ -49,8 +53,8 @@
             var text = document.createTextNode("Vertice 1 (From): ");
             verticeFromLabel.appendChild(text);
             verticeFromLabel.setAttribute("for", verticeFromID);
-            newDiv.insertBefore(verticeFromLabel, document.getElementById(verticeFromID));
-            newDiv.appendChild(verticeFrom);
+            newDiv.insertBefore(verticeFromLabel, document.getElementById(verticeFromID)); //append to newDiv
+            newDiv.appendChild(verticeFrom); //append to newDiv
 
             //Vertice 2 (To) Input
             let verticeTo = document.createElement("input");
@@ -64,8 +68,8 @@
             var text = document.createTextNode(" Vertice 2 (To): ");
             verticeToLabel.appendChild(text);
             verticeToLabel.setAttribute("for", verticeToID);
-            newDiv.insertBefore(verticeToLabel, document.getElementById(verticeToID));
-            newDiv.appendChild(verticeTo);
+            newDiv.insertBefore(verticeToLabel, document.getElementById(verticeToID)); //append to newDiv
+            newDiv.appendChild(verticeTo); //append to newDiv
 
             //Weight Input
             let weight = document.createElement("input");
@@ -78,17 +82,32 @@
             var text = document.createTextNode(" Weight: ");
             weightLabel.appendChild(text);
             weightLabel.setAttribute("for", weightID);
-            newDiv.insertBefore(weightLabel, document.getElementById(weightID));
-            newDiv.appendChild(weight);
+            newDiv.insertBefore(weightLabel, document.getElementById(weightID)); //append to newDiv
+            newDiv.appendChild(weight); //append to newDiv
 
             graphForm.appendChild(newDiv);
-            //let br = document.createElement("br");
-            //graphForm.appendChild(br);
         }
 
         function removeInput() {
             graphForm.removeChild(graphForm.lastElementChild);
             numInput--;
+        }
+
+        function buildGraph() {
+            for(let j=1; j<=numInput; j++) {
+                let verticeFrom = document.getElementById("verticeFrom"+j).value;
+                let verticeTo = document.getElementById("verticeTo"+j).value;
+                let weight = document.getElementById("weight"+j).value;
+
+                if(verticeFrom === "" || verticeTo === "" || weight === "") 
+                {
+                    alert("Input cannot be empty");
+                    break;
+                }
+                else {
+                    console.log("From " + verticeFrom + " To " + verticeTo + " weight is: " + weight);
+                }
+            }
         }
     </script>
 
