@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>CPS 706 Project</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="cytoscape.min.js"></script>
+    <script src="bellmans/routing.js"></script>
+</head>
+
+<body>
+    <div id="inputContainer">
+        <form id="graphForm">
+            <input type="submit" value="Build Graph"> 
+            <input type="button" onclick="addInput()" value="Add Connection"> <br>
+
+            <label for="verticeFrom1">Vertice 1 (From):</label>
+            <input type="text" id="verticeFrom1" name="vertice1" required>
+            <label for="verticeTo1">Vertice 2 (To):</label>
+            <input type="text" id="verticeTo1" name="vertice1" required>
+            <label for="weight1">Weight:</label>
+            <input type="number" id="weight1" name="weight1" required> <br>
+        </form>
+    </div>
+    <script>
+        const graphForm = document.getElementById('graphForm');
+        var numInput = 1;
+        function addInput() {
+            numInput++;
+            //Vertice 1 (From) Input
+            let verticeFrom = document.createElement("input");
+            var verticeFromID = "verticeFrom".concat(numInput);
+            verticeFrom.setAttribute("id", verticeFromID);
+            verticeFrom.setAttribute("type", "text");
+            verticeFrom.setAttribute("minlength", "1");
+            verticeFrom.setAttribute("maxlength", "1");
+            verticeFrom.setAttribute("required", "");
+            let verticeFromLabel = document.createElement("label");
+            var text = document.createTextNode("Vertice 1 (From): ");
+            verticeFromLabel.appendChild(text);
+            verticeFromLabel.setAttribute("for", verticeFromID);
+            graphForm.insertBefore(verticeFromLabel, document.getElementById(verticeFromID));
+            graphForm.appendChild(verticeFrom);
+
+            //Vertice 2 (To) Input
+            let verticeTo = document.createElement("input");
+            var verticeToID = "verticeTo".concat(numInput);
+            verticeTo.setAttribute("id", verticeToID);
+            verticeTo.setAttribute("type", "text");
+            verticeTo.setAttribute("minlength", "1");
+            verticeTo.setAttribute("maxlength", "1");
+            verticeTo.setAttribute("required", "");
+            let verticeToLabel = document.createElement("label");
+            var text = document.createTextNode(" Vertice 2 (To): ");
+            verticeToLabel.appendChild(text);
+            verticeToLabel.setAttribute("for", verticeToID);
+            graphForm.insertBefore(verticeToLabel, document.getElementById(verticeToID));
+            graphForm.appendChild(verticeTo);
+
+            //Weight Input
+            let weight = document.createElement("input");
+            var weightID = "weight".concat(numInput);
+            weight.setAttribute("id", weightID);
+            weight.setAttribute("type", "number");
+            weight.setAttribute("required", "");
+
+            let weightLabel = document.createElement("label");
+            var text = document.createTextNode(" Weight: ");
+            weightLabel.appendChild(text);
+            weightLabel.setAttribute("for", weightID);
+            graphForm.insertBefore(weightLabel, document.getElementById(weightID));
+            graphForm.appendChild(weight);
+
+            let br = document.createElement("br");
+            graphForm.appendChild(br);
+        }
+    </script>
+
+    <!--
+    <div id="cy">Test</div>
+    <script>
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: [
+                { data: { id: 'a' } },
+                { data: { id: 'b' } },
+                { 
+                    data: { 
+                        id: 'ab', 
+                        source: 'a', 
+                        target: 'b' 
+                    } 
+                }]
+        });
+    </script>
+    -->
+</body>
+
+</html>
