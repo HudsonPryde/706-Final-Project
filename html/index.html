@@ -13,22 +13,30 @@
 <body>
     <div id="inputContainer">
         <form id="graphForm">
-            <input type="submit" value="Build Graph"> 
-            <input type="button" onclick="addInput()" value="Add Connection"> <br>
+            <input type="button" onclick="buildGraph()" value="Build Graph"> 
+            <input type="button" onclick="addInput()" value="Add Connection"> 
+            <input type="button" onclick="removeInput()" value="Remove Connection"> <br>
 
-            <label for="verticeFrom1">Vertice 1 (From):</label>
-            <input type="text" id="verticeFrom1" name="vertice1" required>
-            <label for="verticeTo1">Vertice 2 (To):</label>
-            <input type="text" id="verticeTo1" name="vertice1" required>
-            <label for="weight1">Weight:</label>
-            <input type="number" id="weight1" name="weight1" required> <br>
+            <div>
+                <label for="verticeFrom1">Vertice 1 (From):</label>
+                <input type="text" id="verticeFrom1" name="vertice1" required>
+                <label for="verticeTo1">Vertice 2 (To):</label>
+                <input type="text" id="verticeTo1" name="vertice1" required>
+                <label for="weight1">Weight:</label>
+                <input type="number" id="weight1" name="weight1" required>
+            </div>
         </form>
+    </div>
+    <div id="graphContainer">
+
     </div>
     <script>
         const graphForm = document.getElementById('graphForm');
         var numInput = 1;
         function addInput() {
             numInput++;
+
+            let newDiv = document.createElement("div");
             //Vertice 1 (From) Input
             let verticeFrom = document.createElement("input");
             var verticeFromID = "verticeFrom".concat(numInput);
@@ -41,8 +49,8 @@
             var text = document.createTextNode("Vertice 1 (From): ");
             verticeFromLabel.appendChild(text);
             verticeFromLabel.setAttribute("for", verticeFromID);
-            graphForm.insertBefore(verticeFromLabel, document.getElementById(verticeFromID));
-            graphForm.appendChild(verticeFrom);
+            newDiv.insertBefore(verticeFromLabel, document.getElementById(verticeFromID));
+            newDiv.appendChild(verticeFrom);
 
             //Vertice 2 (To) Input
             let verticeTo = document.createElement("input");
@@ -56,8 +64,8 @@
             var text = document.createTextNode(" Vertice 2 (To): ");
             verticeToLabel.appendChild(text);
             verticeToLabel.setAttribute("for", verticeToID);
-            graphForm.insertBefore(verticeToLabel, document.getElementById(verticeToID));
-            graphForm.appendChild(verticeTo);
+            newDiv.insertBefore(verticeToLabel, document.getElementById(verticeToID));
+            newDiv.appendChild(verticeTo);
 
             //Weight Input
             let weight = document.createElement("input");
@@ -70,11 +78,17 @@
             var text = document.createTextNode(" Weight: ");
             weightLabel.appendChild(text);
             weightLabel.setAttribute("for", weightID);
-            graphForm.insertBefore(weightLabel, document.getElementById(weightID));
-            graphForm.appendChild(weight);
+            newDiv.insertBefore(weightLabel, document.getElementById(weightID));
+            newDiv.appendChild(weight);
 
-            let br = document.createElement("br");
-            graphForm.appendChild(br);
+            graphForm.appendChild(newDiv);
+            //let br = document.createElement("br");
+            //graphForm.appendChild(br);
+        }
+
+        function removeInput() {
+            graphForm.removeChild(graphForm.lastElementChild);
+            numInput--;
         }
     </script>
 
