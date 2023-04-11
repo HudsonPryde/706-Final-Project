@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { Graph as BellmansGraph, Edge } from "./Bellmans";
-import { Button, Input } from "semantic-ui-react";
+import { Button, Form, Input } from "semantic-ui-react";
 import CytoscapeComponent from "react-cytoscapejs";
 import { StyledDiv, StyledInnerDiv, StyledText } from "./Styles";
 import { ElementDefinition } from "cytoscape";
@@ -16,9 +16,9 @@ export const EdgeDisplay: FC<EdgeProps> = ({ edge, onChange }: EdgeProps) => {
       </StyledText>
       <Input
         onChange={(e) => {
+          e.preventDefault();
           onChange(e.target.value);
         }}
-        value={edge.weight}
       ></Input>
     </div>
   );
@@ -49,6 +49,9 @@ export const GraphUI: FC = () => {
   useEffect(() => {
     console.log("selected nodes", selectedNodes);
   }, [selectedNodes]);
+  useEffect(() => {
+    console.log("edges: ", edges);
+  }, [edges]);
 
   const layout = {
     name: "breadthfirst",
@@ -118,6 +121,16 @@ export const GraphUI: FC = () => {
         </Button>
         <Button
           onClick={() => {
+            setNumberOfNodes(numberOfNodes + 1);
+          }}
+        >
+          Add Node
+        </Button>
+        <Button onClick={() => setNumberOfNodes(numberOfNodes - 1)}>
+          Remove Node
+        </Button>
+        <Button
+          onClick={() => {
             setEdges([
               { from: "A", to: "B", weight: 5, isHighlighted: false },
               { from: "A", to: "C", weight: 2, isHighlighted: false },
@@ -126,16 +139,47 @@ export const GraphUI: FC = () => {
               { from: "A", to: "E", weight: 3, isHighlighted: false },
               { from: "E", to: "B", weight: 2, isHighlighted: false },
             ]);
+            setEdges(
+              edges.map((e) => ({
+                ...e,
+                isHighlighted: false,
+              }))
+            );
           }}
         >
           Reset
         </Button>
+        <div style={{ border: "1px solid red" }}>
+          <Form
+            onSubmit={(event) => {
+              event.preventDefault();
+              const newEdges = [...edges];
+              newEdges.push({
+                from: event.currentTarget.from.value,
+                to: event.currentTarget.to.value,
+                weight: -1,
+              });
+              setEdges(newEdges);
+            }}
+          >
+            <label>Add edge:</label>
+            <Form.Field>
+              <label>From:</label>
+              <input name="from"></input>
+            </Form.Field>
+            <Form.Field>
+              <label>To:</label>
+              <input name="to"></input>
+            </Form.Field>
+            <Button type="submit">Submit</Button>
+          </Form>
+        </div>
         {edges.map((e, idx) => (
           <EdgeDisplay
             edge={e}
             onChange={(newWeight) => {
-              const newEdges = edges;
-              newEdges[idx].weight = newWeight as unknown as number;
+              const newEdges = [...edges];
+              newEdges[idx].weight = Number(newWeight);
               setEdges(newEdges);
             }}
           />
