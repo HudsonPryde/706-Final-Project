@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../css/style.css">
 
     <script src="cytoscape.min.js"></script>
-    <script src="bellmans/routing.js"></script>
+    <script type="text/javascript" src="../script/javascript/bellmanRouting.js"></script>
 </head>
 
 <body>
@@ -18,6 +18,11 @@
             <input type="button" onclick="removeInput()" value="Remove Connection"> <br>
 
             <div>
+                <label for="start">Find the shortest path from vertice </label>
+                <input type="text" id="start" name="start" style="width: 30px" required>
+                <label for="end">to:</label>
+                <input type="text" id="end" name="end" style="width: 30px" required>
+                <br>
                 <label for="verticeFrom1">Vertice 1 (From):</label>
                 <input type="text" id="verticeFrom1" name="vertice1" required>
                 <label for="verticeTo1">Vertice 2 (To):</label>
@@ -93,20 +98,39 @@
             numInput--;
         }
 
-        function buildGraph() {
-            for(let j=1; j<=numInput; j++) {
-                let verticeFrom = document.getElementById("verticeFrom"+j).value;
-                let verticeTo = document.getElementById("verticeTo"+j).value;
-                let weight = document.getElementById("weight"+j).value;
+        function getUserInput() {
+            var edges = Array();
+            for (let j = 1; j <= numInput; j++) {
+                let verticeFrom = document.getElementById("verticeFrom" + j).value;
+                let verticeTo = document.getElementById("verticeTo" + j).value;
+                let weight = document.getElementById("weight" + j).value;
 
-                if(verticeFrom === "" || verticeTo === "" || weight === "") 
-                {
+                if (verticeFrom === "" || verticeTo === "" || weight === "") {
                     alert("Input cannot be empty");
-                    break;
+                    return Array();
                 }
-                else {
-                    console.log("From " + verticeFrom + " To " + verticeTo + " weight is: " + weight);
+                const userInput = {
+                    from: verticeFrom,
+                    to: verticeTo,
+                    weight: weight
                 }
+                edges.push(userInput);
+            }
+            return edges;
+        }
+
+        function buildGraph() {
+            let start = document.getElementById("start").value;
+            let end = document.getElementById("end").value;
+            if (start === "" || end === "") {
+                alert("Input cannot be empty");
+                return;
+            }
+            const edges = getUserInput();
+            if (edges.length !== 0) {
+                var graph = new GraphJS(edges);
+                var shortestPath = graph.bellmanFord(start, end);
+                console.log(shortestPath);
             }
         }
     </script>
