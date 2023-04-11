@@ -92,33 +92,35 @@ export const GraphUI: FC = () => {
   return (
     <StyledDiv>
       <StyledInnerDiv>
-        <Button
-          onClick={() => {
-            const graph = new BellmansGraph(edges);
-            console.log(selectedNodes);
-            const res = graph.bellmanFord("A", "B");
-            console.log(res);
+        <div style={{ border: "1px solid blue" }}>
+          <Button
+            onClick={() => {
+              const graph = new BellmansGraph(edges);
+              console.log(selectedNodes);
+              const res = graph.bellmanFord("A", "B");
+              console.log(res);
 
-            const newEdges = [...edges];
-            for (let i = 0; i < res.length - 1; i++) {
-              for (let j = 0; j < newEdges.length; j++) {
-                if (
-                  newEdges[j].from === res[i][0] &&
-                  newEdges[j].to === res[i + 1][0]
-                ) {
-                  newEdges[j].isHighlighted = true;
+              const newEdges = [...edges];
+              for (let i = 0; i < res.length - 1; i++) {
+                for (let j = 0; j < newEdges.length; j++) {
+                  if (
+                    newEdges[j].from === res[i][0] &&
+                    newEdges[j].to === res[i + 1][0]
+                  ) {
+                    newEdges[j].isHighlighted = true;
+                  }
                 }
               }
-            }
-            console.log(newEdges);
-            setEdges(newEdges);
-          }}
-        >
-          Compute Decentralized
-        </Button>
-        <Button onClick={() => setDijkstra(!isDijkstra)}>
-          Compute Centralized
-        </Button>
+              console.log(newEdges);
+              setEdges(newEdges);
+            }}
+          >
+            Compute Decentralized
+          </Button>
+          <Button onClick={() => setDijkstra(!isDijkstra)}>
+            Compute Centralized
+          </Button>
+        </div>
         <Button
           onClick={() => {
             setNumberOfNodes(numberOfNodes + 1);
