@@ -1,5 +1,5 @@
-import { Graph } from './utils/graph.js';
-import { Edge } from './utils/graph.js';
+import { Graph } from './../utils/graph.js';
+import { Edge } from './../utils/graph.js';
 
 class Bellman extends Graph{
 
