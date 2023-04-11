@@ -1,31 +1,10 @@
-interface Edge {
-  from: string;
-  to: string;
-  weight: number;
-}
+import { Graph } from './utils/graph.js';
+import { Edge } from './utils/graph.js';
 
-class Graph {
-  private edges: Edge[];
-
-  constructor(edges: Edge[]) {
-    this.edges = edges;
-  }
-
-  private getNodes(): string[] {
-    const nodes = new Set<string>();
-    for (const edge of this.edges) {
-      nodes.add(edge.from);
-      nodes.add(edge.to);
-    }
-    return Array.from(nodes);
-  }
-
-  private getNeighbors(node: string): Edge[] {
-    return this.edges.filter((edge) => edge.from === node);
-  }
+class Bellman extends Graph{
 
   public bellmanFord(startNode: string, endNode: string): (string | number)[][] {
-    const nodes = this.getNodes();
+    const nodes = b_graph.getNodes();
     const distances: Record<string, number> = {};
     const predecessors: Record<string, string> = {};
 
@@ -40,7 +19,7 @@ class Graph {
     // calculate distances
     for (let i = 0; i < nodes.length - 1; i++) {
       for (const node of nodes) {
-        const neighbors = this.getNeighbors(node);
+        const neighbors = b_graph.getNeighbors(node);
         for (const neighbor of neighbors) {
           // if the distance to the neighbor is shorter than the current distance
           const distance = distances[node] + neighbor.weight;
@@ -62,13 +41,11 @@ class Graph {
         // no path return empty array
         return [];
       }
-      //console.log(current);
       path.unshift(predecessor);
       current = predecessor;
     }
 
     return path.map((node) => [node, distances[node]]);
-    // return path;
   }
 }
 
@@ -82,6 +59,6 @@ const edges: Edge[] = [
    { from: 'E', to: 'B', weight: 2 },
 ];
 
-const graph = new Graph(edges);
-const shortestPath = graph.bellmanFord('A', 'B');
-console.log(shortestPath); // [ 3, 5 ]
+const b_graph = new Bellman(edges)
+const shortestPath = b_graph.bellmanFord('A', 'B');
+console.log(shortestPath); 
