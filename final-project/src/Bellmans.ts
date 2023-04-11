@@ -2,6 +2,7 @@ export interface Edge {
   from: string;
   to: string;
   weight: number;
+  isHighlighted?: boolean;
 }
 
 export class Graph {

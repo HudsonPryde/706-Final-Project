@@ -8,7 +8,9 @@ export const StyledDiv = styled.div`
   display: flex;
 `;
 
-export const StyledInnerDiv = styled.div``;
+export const StyledInnerDiv = styled.div`
+display: flex;
+flex-direction column`;
 
 export const StyledButton = styled.div``;
 
