@@ -4,6 +4,7 @@ import { Button, Form, Input } from "semantic-ui-react";
 import CytoscapeComponent from "react-cytoscapejs";
 import { StyledDiv, StyledInnerDiv, StyledText } from "./Styles";
 import { ElementDefinition } from "cytoscape";
+
 export interface EdgeProps {
   edge: Edge;
   onChange: (a: string) => void;
@@ -34,24 +35,9 @@ export const GraphUI: FC = () => {
     { from: "E", to: "B", weight: 2, isHighlighted: false },
   ]);
 
-  useEffect(() => {
-    console.log(edges);
-  }, [edges]);
-
-  const bellmanGraph = new BellmansGraph(edges);
-
   const [isDijkstra, setDijkstra] = useState(false);
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const [numberOfNodes, setNumberOfNodes] = useState(5);
-
-  console.log(selectedNodes);
-
-  useEffect(() => {
-    console.log("selected nodes", selectedNodes);
-  }, [selectedNodes]);
-  useEffect(() => {
-    console.log("edges: ", edges);
-  }, [edges]);
 
   const layout = {
     name: "breadthfirst",
@@ -64,19 +50,20 @@ export const GraphUI: FC = () => {
     avoidOverlap: true,
     nodeDimensionsIncludeLabels: false,
   };
-  const layout2 = {
-    name: "cose-bilkent",
-  };
 
-  const data = {
-    nodes: Array.from({ length: numberOfNodes }, (x, i) => ({
-      data: {
-        id: (i + 10).toString(36).toUpperCase(),
-        label: (i + 10).toString(36).toUpperCase(),
-      },
-      selectable: false,
-      selected: selectedNodes.includes((i + 10).toString(36).toUpperCase()),
-    })) as ElementDefinition[],
+  const data: { nodes: ElementDefinition[]; edges: ElementDefinition[] } = {
+    nodes: Array.from({ length: numberOfNodes }, (x, i) => {
+      const letter = (i + 10).toString(36).toUpperCase();
+
+      return {
+        data: {
+          id: letter,
+          label: letter,
+        },
+        selectable: false,
+        selected: selectedNodes.includes((i + 10).toString(36).toUpperCase()),
+      };
+    }),
     edges: edges.map((e) => ({
       data: {
         source: e.from,
@@ -85,7 +72,7 @@ export const GraphUI: FC = () => {
       },
       selectable: false,
       selected: e.isHighlighted,
-    })) as ElementDefinition[],
+    })),
   };
   console.log(data);
 
@@ -96,9 +83,8 @@ export const GraphUI: FC = () => {
           <Button
             onClick={() => {
               const graph = new BellmansGraph(edges);
-              console.log(selectedNodes);
+              // TODO: replace with nodes selected
               const res = graph.bellmanFord("A", "B");
-              console.log(res);
 
               const newEdges = [...edges];
               for (let i = 0; i < res.length - 1; i++) {
@@ -111,7 +97,6 @@ export const GraphUI: FC = () => {
                   }
                 }
               }
-              console.log(newEdges);
               setEdges(newEdges);
             }}
           >
@@ -198,18 +183,8 @@ export const GraphUI: FC = () => {
           style={{ width: "800px", height: "800px" }}
           cy={(cy) => {
             cy.on("tap", "node", (evt) => {
-              var node = evt.target;
-              // console.log("EVT", evt);
-              // console.log("TARGET", node.data());
-              // console.log("TARGET TYPE", typeof node[0]);
-              if (selectedNodes.length === 0) {
-                setSelectedNodes([node.data().id]);
-              }
-              if (selectedNodes.length === 2) {
-                setSelectedNodes([node.data().id]);
-              } else {
-                setSelectedNodes([selectedNodes[0], node.data().id]);
-              }
+              var data = evt.target.data();
+              // TODO: tap 2 nodes and to find route between them?
               console.log(selectedNodes);
             });
           }}
