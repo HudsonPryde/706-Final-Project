@@ -115,7 +115,8 @@ export const GraphUI: FC = () => {
             <Button
               onClick={async (event) => {
                 removeAllHighlight()
-
+                // clear node colors
+                if (cyRef.current) cyRef.current.nodes().forEach(((node) => {node.style('background-color', ''); return true;}));
                 const graph = new BellmansGraph(edges);
                 const res = await graph.bellmanFord(cyRef.current, start, end);
 
