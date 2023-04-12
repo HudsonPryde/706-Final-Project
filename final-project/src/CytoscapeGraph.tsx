@@ -123,6 +123,8 @@ export const GraphUI: FC = () => {
               Compute Decentralized
             </Button>
             <Button onClick={() => {
+              removeAllHighlight()
+              
               setDijkstra(!isDijkstra)
 
               /* Uncomment when dijkstra algorithm is added
