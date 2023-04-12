@@ -28,6 +28,8 @@ export const EdgeDisplay: FC<EdgeProps> = ({ edge, onChange }: EdgeProps) => {
 export const GraphUI: FC = () => {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [startSide, setStartSide] = useState('');
+  const [endSide, setEndSide] = useState('');
 
   const [edges, setEdges] = useState<Edge[]>([
     { from: "A", to: "B", weight: 5, isHighlighted: false },
@@ -94,9 +96,18 @@ export const GraphUI: FC = () => {
           <Form onSubmit={(event) => {
             event.preventDefault();
             const startNode = event.currentTarget.start.value;
+            const endStartSide = event.currentTarget.startSide.value;
             const endNode = event.currentTarget.end.value;
-            setStart(startNode);
-            setEnd(endNode);
+            const endNodeSide = event.currentTarget.endSide.value;
+            if(endStartSide == "server" && endStartSide == endNodeSide) {
+              alert("No server-server communication")
+            }
+            else {
+              setStart(startNode);
+              setStartSide(endStartSide);
+              setEnd(endNode);
+              setEndSide(endNodeSide);
+            }
             //Need to call setStart() or setEnd() on input change instead of this way
           }}>
             <Button
@@ -124,7 +135,7 @@ export const GraphUI: FC = () => {
             </Button>
             <Button onClick={() => {
               removeAllHighlight()
-              
+
               setDijkstra(!isDijkstra)
 
               /* Uncomment when dijkstra algorithm is added
@@ -153,10 +164,18 @@ export const GraphUI: FC = () => {
             <Form.Field>
               <label>Starting node:</label>
               <input name="start" minLength={1} maxLength={1} required></input>
+              <select name="startSide" required>
+                <option value="client">Client</option>
+                <option value="server">Server</option>
+              </select>
             </Form.Field>
             <Form.Field>
               <label>Ending node:</label>
               <input name="end" minLength={1} maxLength={1} required></input>
+              <select name="endSide" required>
+                <option value="client">Client</option>
+                <option value="server">Server</option>
+              </select>
             </Form.Field>
             <Button type="submit">Set Nodes</Button>
           </Form>
