@@ -80,32 +80,51 @@ export const GraphUI: FC = () => {
     <StyledDiv>
       <StyledInnerDiv>
         <div style={{ border: "1px solid blue" }}>
-          <Button
-            onClick={() => {
-              const graph = new BellmansGraph(edges);
-              // TODO: replace with nodes selected
-              const res = graph.bellmanFord("A", "B");
+          <Form onSubmit={(event) => {
+              event.preventDefault();
+              const startNode = event.currentTarget.start.value;
+              const endNode = event.currentTarget.end.value;
+              //Need to figure out how to pass these two values to decentralize and centralize button below
+           }}>
+            <Button
+              onClick={(event) => {
+                const graph = new BellmansGraph(edges);
+                // TODO: replace with nodes selected
+                const res = graph.bellmanFord("A", "B");
 
-              const newEdges = [...edges];
-              for (let i = 0; i < res.length - 1; i++) {
-                for (let j = 0; j < newEdges.length; j++) {
-                  if (
-                    newEdges[j].from === res[i][0] &&
-                    newEdges[j].to === res[i + 1][0]
-                  ) {
-                    newEdges[j].isHighlighted = true;
+                const newEdges = [...edges];
+                for (let i = 0; i < res.length - 1; i++) {
+                  for (let j = 0; j < newEdges.length; j++) {
+                    if (
+                      newEdges[j].from === res[i][0] &&
+                      newEdges[j].to === res[i + 1][0]
+                    ) {
+                      newEdges[j].isHighlighted = true;
+                    }
                   }
                 }
-              }
-              setEdges(newEdges);
-            }}
-          >
-            Compute Decentralized
-          </Button>
-          <Button onClick={() => setDijkstra(!isDijkstra)}>
-            Compute Centralized
-          </Button>
+                setEdges(newEdges);
+              }}
+            >
+              Compute Decentralized
+            </Button>
+            <Button onClick={() => setDijkstra(!isDijkstra)}>
+              Compute Centralized
+            </Button>
+            <br></br>
+            <label>Find shortest path</label>
+            <Form.Field>
+              <label>Starting node:</label>
+              <input name="start"></input>
+            </Form.Field>
+            <Form.Field>
+              <label>Ending node:</label>
+              <input name="end"></input>
+            </Form.Field>
+            <Button type="submit">Submit</Button>
+          </Form>
         </div>
+
         <Button
           onClick={() => {
             setNumberOfNodes(numberOfNodes + 1);
