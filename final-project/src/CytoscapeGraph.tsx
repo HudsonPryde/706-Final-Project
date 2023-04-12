@@ -7,15 +7,17 @@ import { ElementDefinition } from "cytoscape";
 
 export interface EdgeProps {
   edge: Edge;
+  defaultValue: string;
   onChange: (a: string) => void;
 }
-export const EdgeDisplay: FC<EdgeProps> = ({ edge, onChange }: EdgeProps) => {
+export const EdgeDisplay: FC<EdgeProps> = ({ edge, defaultValue, onChange }: EdgeProps) => {
   return (
     <div>
       <StyledText>
         {edge.from}-{edge.to}
       </StyledText>
       <Input
+        defaultValue={defaultValue}
         onChange={(e) => {
           e.preventDefault();
           onChange(e.target.value);
@@ -73,20 +75,24 @@ export const GraphUI: FC = () => {
       data: {
         source: e.from,
         target: e.to,
-        label: e.weight,
+        label: '',
+        weight: e.weight,
       },
       selectable: false,
       selected: e.isHighlighted,
+      style: {
+        'label': e.weight.toString()
+      }
     })),
   };
-  console.log(data);
+  // console.log(data);
 
   function removeAllHighlight() {
     const newEdges = [...edges];
-      for (let j = 0; j < newEdges.length; j++) {
-        newEdges[j].isHighlighted = false;
-      }
-    setEdges(newEdges); 
+    for (let j = 0; j < newEdges.length; j++) {
+      newEdges[j].isHighlighted = false;
+    }
+    setEdges(newEdges);
   }
 
   return (
@@ -99,7 +105,7 @@ export const GraphUI: FC = () => {
             const endStartSide = event.currentTarget.startSide.value;
             const endNode = event.currentTarget.end.value;
             const endNodeSide = event.currentTarget.endSide.value;
-            if(endStartSide == "server" && endStartSide == endNodeSide) {
+            if (endStartSide == "server" && endStartSide == endNodeSide) {
               alert("No server-server communication")
             }
             else {
@@ -114,8 +120,10 @@ export const GraphUI: FC = () => {
               onClick={(event) => {
                 removeAllHighlight()
 
+                console.log(edges);
                 const graph = new BellmansGraph(edges);
                 const res = graph.bellmanFord(start, end);
+                console.log(res);
 
                 const newEdges = [...edges];
                 for (let i = 0; i < res.length - 1; i++) {
@@ -239,6 +247,7 @@ export const GraphUI: FC = () => {
         {edges.map((e, idx) => (
           <EdgeDisplay
             edge={e}
+            defaultValue = {e.weight.toString()}
             onChange={(newWeight) => {
               const newEdges = [...edges];
               newEdges[idx].weight = Number(newWeight);
