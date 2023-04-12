@@ -26,6 +26,9 @@ export const EdgeDisplay: FC<EdgeProps> = ({ edge, onChange }: EdgeProps) => {
 };
 
 export const GraphUI: FC = () => {
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+
   const [edges, setEdges] = useState<Edge[]>([
     { from: "A", to: "B", weight: 5, isHighlighted: false },
     { from: "A", to: "C", weight: 2, isHighlighted: false },
@@ -84,13 +87,14 @@ export const GraphUI: FC = () => {
               event.preventDefault();
               const startNode = event.currentTarget.start.value;
               const endNode = event.currentTarget.end.value;
-              //Need to figure out how to pass these two values to decentralize and centralize button below
+              setStart(startNode);
+              setEnd(endNode);
+              //Need to call setStart() or setEnd() on input change instead of this way
            }}>
             <Button
               onClick={(event) => {
                 const graph = new BellmansGraph(edges);
-                // TODO: replace with nodes selected
-                const res = graph.bellmanFord("A", "B");
+                const res = graph.bellmanFord(start, end);
 
                 const newEdges = [...edges];
                 for (let i = 0; i < res.length - 1; i++) {
@@ -115,13 +119,13 @@ export const GraphUI: FC = () => {
             <label>Find shortest path</label>
             <Form.Field>
               <label>Starting node:</label>
-              <input name="start"></input>
+              <input name="start" minLength={1} maxLength={1} required></input>
             </Form.Field>
             <Form.Field>
               <label>Ending node:</label>
-              <input name="end"></input>
+              <input name="end" minLength={1} maxLength={1} required></input>
             </Form.Field>
-            <Button type="submit">Submit</Button>
+            <Button type="submit">Set Nodes</Button>
           </Form>
         </div>
 
@@ -171,11 +175,11 @@ export const GraphUI: FC = () => {
             <label>Add edge:</label>
             <Form.Field>
               <label>From:</label>
-              <input name="from"></input>
+              <input name="from" type="text" minLength={1} maxLength={1} required></input>
             </Form.Field>
             <Form.Field>
               <label>To:</label>
-              <input name="to"></input>
+              <input name="to" type="text" minLength={1} maxLength={1} required></input>
             </Form.Field>
             <Button type="submit">Submit</Button>
           </Form>
