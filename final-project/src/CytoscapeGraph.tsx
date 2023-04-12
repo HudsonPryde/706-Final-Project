@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useRef } from "react";
 import { Graph as BellmansGraph, Edge } from "./Bellmans";
 import { Button, Form, Input } from "semantic-ui-react";
 import CytoscapeComponent from "react-cytoscapejs";
@@ -27,6 +27,11 @@ export const EdgeDisplay: FC<EdgeProps> = ({ edge, onChange }: EdgeProps) => {
 };
 
 export const GraphUI: FC = () => {
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+  const [startSide, setStartSide] = useState('');
+  const [endSide, setEndSide] = useState('');
+
   const [edges, setEdges] = useState<Edge[]>([
     { from: "A", to: "B", weight: 5, isHighlighted: false },
     { from: "A", to: "C", weight: 2, isHighlighted: false },
@@ -39,33 +44,7 @@ export const GraphUI: FC = () => {
   const [isDijkstra, setDijkstra] = useState(false);
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const [numberOfNodes, setNumberOfNodes] = useState(5);
-  const [refresh, setRefresh] = useState(false);
-
-  const tracePath = async (cy: any, startNode: string, endNode: string) => {
-    const graph = new BellmansGraph(edges);
-    console.log(graph);
-    let res = graph.bellmanFord(startNode, endNode);
-    console.log(startNode, endNode, res);
-    // res.forEach((node) => {
-    //   cy.$id(node[0]).animate({
-    //     style: {
-    //       "background-color": "red",
-    //     },
-    //     duration: 1000,
-    //   });
-    // });
-    for (let i = 0; i < res.length - 1; i++) {
-      const node = cy.$id(res[i][0]);
-      const edge = node.edgesWith(cy.$id(res[i+1][0]));
-      console.log(edge);
-      await edge.animate({
-        style: {
-          "line-color": "red",
-        },
-        duration: 1000,
-      });
-    }
-  };
+  const cyRef = useRef<cytoscape.Core | null>(null);
 
   const layout = {
     name: "breadthfirst",
@@ -104,51 +83,103 @@ export const GraphUI: FC = () => {
   };
   console.log(data);
 
+  function removeAllHighlight() {
+    const newEdges = [...edges];
+      for (let j = 0; j < newEdges.length; j++) {
+        newEdges[j].isHighlighted = false;
+      }
+    setEdges(newEdges); 
+  }
+
   return (
     <StyledDiv>
       <StyledInnerDiv>
         <div style={{ border: "1px solid blue" }}>
           <Form onSubmit={(event) => {
-              event.preventDefault();
-              setSelectedNodes([event.currentTarget.start.value, event.currentTarget.end.value])
-              //Need to figure out how to pass these two values to decentralize and centralize button below
-           }}>
+            event.preventDefault();
+            const startNode = event.currentTarget.start.value;
+            const endStartSide = event.currentTarget.startSide.value;
+            const endNode = event.currentTarget.end.value;
+            const endNodeSide = event.currentTarget.endSide.value;
+            if(endStartSide == "server" && endStartSide == endNodeSide) {
+              alert("No server-server communication")
+            }
+            else {
+              setStart(startNode);
+              setStartSide(endStartSide);
+              setEnd(endNode);
+              setEndSide(endNodeSide);
+            }
+            //Need to call setStart() or setEnd() on input change instead of this way
+          }}>
             <Button
-              onClick={(event) => {
-                // // TODO: replace with nodes selected
-                // const res = graph.bellmanFord(startNode, endNode);
+              onClick={async (event) => {
+                removeAllHighlight()
 
-                // const newEdges = [...edges];
-                // for (let i = 0; i < res.length - 1; i++) {
-                //   for (let j = 0; j < newEdges.length; j++) {
-                //     if (
-                //       newEdges[j].from === res[i][0] &&
-                //       newEdges[j].to === res[i + 1][0]
-                //     ) {
-                //       newEdges[j].isHighlighted = true;
-                //     }
-                //   }
-                // }
-                // setEdges(newEdges);
-                setRefresh(!refresh);
+                const graph = new BellmansGraph(edges);
+                const res = await graph.bellmanFord(cyRef.current, start, end);
+
+                const newEdges = [...edges];
+                for (let i = 0; i < res.length - 1; i++) {
+                  for (let j = 0; j < newEdges.length; j++) {
+                    if (
+                      newEdges[j].from === res[i][0] &&
+                      newEdges[j].to === res[i + 1][0]
+                    ) {
+                      newEdges[j].isHighlighted = true;
+                    }
+                  }
+                }
+                setEdges(newEdges);
               }}
             >
               Compute Decentralized
             </Button>
-            <Button onClick={() => setDijkstra(!isDijkstra)}>
+            <Button onClick={() => {
+              removeAllHighlight()
+
+              setDijkstra(!isDijkstra)
+
+              /* Uncomment when dijkstra algorithm is added
+              const graph = new DijkstraGraph(edges);
+              const res = graph.dijkstra(start, end);
+
+              const newEdges = [...edges];
+              for (let i = 0; i < res.length - 1; i++) {
+                for (let j = 0; j < newEdges.length; j++) {
+                  if (
+                    newEdges[j].from === res[i][0] &&
+                    newEdges[j].to === res[i + 1][0]
+                  ) {
+                    newEdges[j].isHighlighted = true;
+                  }
+                }
+              }
+              setEdges(newEdges);
+              */
+            }}
+            >
               Compute Centralized
             </Button>
             <br></br>
             <label>Find shortest path</label>
             <Form.Field>
               <label>Starting node:</label>
-              <input name="start"></input>
+              <input name="start" minLength={1} maxLength={1} required></input>
+              <select name="startSide" required>
+                <option value="client">Client</option>
+                <option value="server">Server</option>
+              </select>
             </Form.Field>
             <Form.Field>
               <label>Ending node:</label>
-              <input name="end"></input>
+              <input name="end" minLength={1} maxLength={1} required></input>
+              <select name="endSide" required>
+                <option value="client">Client</option>
+                <option value="server">Server</option>
+              </select>
             </Form.Field>
-            <Button type="submit">Submit</Button>
+            <Button type="submit">Set Nodes</Button>
           </Form>
         </div>
 
@@ -198,11 +229,11 @@ export const GraphUI: FC = () => {
             <label>Add edge:</label>
             <Form.Field>
               <label>From:</label>
-              <input name="from"></input>
+              <input name="from" type="text" minLength={1} maxLength={1} required></input>
             </Form.Field>
             <Form.Field>
               <label>To:</label>
-              <input name="to"></input>
+              <input name="to" type="text" minLength={1} maxLength={1} required></input>
             </Form.Field>
             <Button type="submit">Submit</Button>
           </Form>
@@ -227,20 +258,7 @@ export const GraphUI: FC = () => {
           layout={layout}
           elements={CytoscapeComponent.normalizeElements(data)}
           style={{ width: "800px", height: "800px" }}
-          cy={(cy) => {
-            var collection = cy.collection();
-            cy.nodes().on("click", (evt) => {
-              var clickedNode = evt.target;
-              if (collection.length > 2) {
-                collection = cy.collection();
-              }
-              collection = collection.union(clickedNode);
-              console.log(clickedNode.data('id'), collection.length);
-              if (collection.length === 2) {
-                tracePath(cy, collection[0].data('id'), collection[1].data('id'));
-              }
-            });
-          }}
+          cy={(cy) => {cyRef.current = cy}}
         />
       </div>
     </StyledDiv>

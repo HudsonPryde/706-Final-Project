@@ -25,13 +25,16 @@ export class Graph {
     return this.edges.filter((edge) => edge.from === node);
   }
 
-  public bellmanFord(
+  public async bellmanFord(
+    cy: any,
     startNode: string,
     endNode: string
-  ): (string | number)[][] {
+  ): Promise<(string | number)[][]> {
+    cy.style().selector('node').style('background-color', 'light-grey').update();
     const nodes = this.getNodes();
     const distances: Record<string, number> = {};
     const predecessors: Record<string, string> = {};
+    const animationSteps: (() => void)[] = [];
 
     for (const node of nodes) {
       // algortithm is decentralized, so initial distances are set to infinity
@@ -52,6 +55,12 @@ export class Graph {
             // update the distance and the predecessor
             distances[neighbor.to] = distance;
             predecessors[neighbor.to] = node;
+
+            animationSteps.push(() => {
+              cy.$(`[id='${neighbor.to}']`).style('background-color', 'orange');
+              cy.$(`[id='${neighbor.to}']`).animate({ style: { 'background-color': 'red' } }, { duration: 500 });
+              cy.$(`[id='${neighbor.to}']`).animate({ style: { 'background-color': 'orange' } }, { duration: 500 });
+            });
           }
         }
       }
@@ -66,10 +75,27 @@ export class Graph {
         // no path return empty array
         return [];
       }
+      const node = cy.$id(current);
+      animationSteps.push(() => {
+        node.style('background-color', 'green');
+      });
       //console.log(current);
       path.unshift(predecessor);
       current = predecessor;
     }
+    animationSteps.push(() => cy.$(`[id='${startNode}']`).style('background-color', 'green'));
+
+    await new Promise<void>((resolve) => {
+      let i = 0;
+      const interval = setInterval(() => {
+        animationSteps[i]();
+        i++;
+        if (i >= animationSteps.length) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 1000);
+    });
 
     return path.map((node) => [node, distances[node]]);
     // return path;
