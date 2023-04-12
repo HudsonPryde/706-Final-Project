@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import { Graph as BellmansGraph, Edge } from "./Bellmans";
 import { Button, Form, Input } from "semantic-ui-react";
 import CytoscapeComponent from "react-cytoscapejs";
 import { StyledDiv, StyledInnerDiv, StyledText } from "./Styles";
 import { ElementDefinition } from "cytoscape";
+
 
 export interface EdgeProps {
   edge: Edge;
@@ -38,6 +39,33 @@ export const GraphUI: FC = () => {
   const [isDijkstra, setDijkstra] = useState(false);
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const [numberOfNodes, setNumberOfNodes] = useState(5);
+  const [refresh, setRefresh] = useState(false);
+
+  const tracePath = async (cy: any, startNode: string, endNode: string) => {
+    const graph = new BellmansGraph(edges);
+    console.log(graph);
+    let res = graph.bellmanFord(startNode, endNode);
+    console.log(startNode, endNode, res);
+    // res.forEach((node) => {
+    //   cy.$id(node[0]).animate({
+    //     style: {
+    //       "background-color": "red",
+    //     },
+    //     duration: 1000,
+    //   });
+    // });
+    for (let i = 0; i < res.length - 1; i++) {
+      const node = cy.$id(res[i][0]);
+      const edge = node.edgesWith(cy.$id(res[i+1][0]));
+      console.log(edge);
+      await edge.animate({
+        style: {
+          "line-color": "red",
+        },
+        duration: 1000,
+      });
+    }
+  };
 
   const layout = {
     name: "breadthfirst",
@@ -82,28 +110,27 @@ export const GraphUI: FC = () => {
         <div style={{ border: "1px solid blue" }}>
           <Form onSubmit={(event) => {
               event.preventDefault();
-              const startNode = event.currentTarget.start.value;
-              const endNode = event.currentTarget.end.value;
+              setSelectedNodes([event.currentTarget.start.value, event.currentTarget.end.value])
               //Need to figure out how to pass these two values to decentralize and centralize button below
            }}>
             <Button
               onClick={(event) => {
-                const graph = new BellmansGraph(edges);
-                // TODO: replace with nodes selected
-                const res = graph.bellmanFord("A", "B");
+                // // TODO: replace with nodes selected
+                // const res = graph.bellmanFord(startNode, endNode);
 
-                const newEdges = [...edges];
-                for (let i = 0; i < res.length - 1; i++) {
-                  for (let j = 0; j < newEdges.length; j++) {
-                    if (
-                      newEdges[j].from === res[i][0] &&
-                      newEdges[j].to === res[i + 1][0]
-                    ) {
-                      newEdges[j].isHighlighted = true;
-                    }
-                  }
-                }
-                setEdges(newEdges);
+                // const newEdges = [...edges];
+                // for (let i = 0; i < res.length - 1; i++) {
+                //   for (let j = 0; j < newEdges.length; j++) {
+                //     if (
+                //       newEdges[j].from === res[i][0] &&
+                //       newEdges[j].to === res[i + 1][0]
+                //     ) {
+                //       newEdges[j].isHighlighted = true;
+                //     }
+                //   }
+                // }
+                // setEdges(newEdges);
+                setRefresh(!refresh);
               }}
             >
               Compute Decentralized
@@ -201,10 +228,17 @@ export const GraphUI: FC = () => {
           elements={CytoscapeComponent.normalizeElements(data)}
           style={{ width: "800px", height: "800px" }}
           cy={(cy) => {
-            cy.on("tap", "node", (evt) => {
-              var data = evt.target.data();
-              // TODO: tap 2 nodes and to find route between them?
-              console.log(selectedNodes);
+            var collection = cy.collection();
+            cy.nodes().on("click", (evt) => {
+              var clickedNode = evt.target;
+              if (collection.length > 2) {
+                collection = cy.collection();
+              }
+              collection = collection.union(clickedNode);
+              console.log(clickedNode.data('id'), collection.length);
+              if (collection.length === 2) {
+                tracePath(cy, collection[0].data('id'), collection[1].data('id'));
+              }
             });
           }}
         />
