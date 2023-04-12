@@ -79,20 +79,30 @@ export const GraphUI: FC = () => {
   };
   console.log(data);
 
+  function removeAllHighlight() {
+    const newEdges = [...edges];
+      for (let j = 0; j < newEdges.length; j++) {
+        newEdges[j].isHighlighted = false;
+      }
+    setEdges(newEdges); 
+  }
+
   return (
     <StyledDiv>
       <StyledInnerDiv>
         <div style={{ border: "1px solid blue" }}>
           <Form onSubmit={(event) => {
-              event.preventDefault();
-              const startNode = event.currentTarget.start.value;
-              const endNode = event.currentTarget.end.value;
-              setStart(startNode);
-              setEnd(endNode);
-              //Need to call setStart() or setEnd() on input change instead of this way
-           }}>
+            event.preventDefault();
+            const startNode = event.currentTarget.start.value;
+            const endNode = event.currentTarget.end.value;
+            setStart(startNode);
+            setEnd(endNode);
+            //Need to call setStart() or setEnd() on input change instead of this way
+          }}>
             <Button
               onClick={(event) => {
+                removeAllHighlight()
+
                 const graph = new BellmansGraph(edges);
                 const res = graph.bellmanFord(start, end);
 
@@ -112,7 +122,28 @@ export const GraphUI: FC = () => {
             >
               Compute Decentralized
             </Button>
-            <Button onClick={() => setDijkstra(!isDijkstra)}>
+            <Button onClick={() => {
+              setDijkstra(!isDijkstra)
+
+              /* Uncomment when dijkstra algorithm is added
+              const graph = new DijkstraGraph(edges);
+              const res = graph.dijkstra(start, end);
+
+              const newEdges = [...edges];
+              for (let i = 0; i < res.length - 1; i++) {
+                for (let j = 0; j < newEdges.length; j++) {
+                  if (
+                    newEdges[j].from === res[i][0] &&
+                    newEdges[j].to === res[i + 1][0]
+                  ) {
+                    newEdges[j].isHighlighted = true;
+                  }
+                }
+              }
+              setEdges(newEdges);
+              */
+            }}
+            >
               Compute Centralized
             </Button>
             <br></br>
