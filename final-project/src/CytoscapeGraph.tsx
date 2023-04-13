@@ -84,7 +84,7 @@ export const GraphUI: FC = () => {
   console.log(data);
 
   /**
-   * Removes the last node and any edges connecting to that node
+   * Removes the node and any edges connecting to that node
    */
   function removeNode(node: String) {
     //var nodes = data.nodes;
@@ -94,6 +94,26 @@ export const GraphUI: FC = () => {
     var removedEdge: Edge[] = [];
     for(let i = 0; i < edges.length; i++) {
       if(newEdge[i].from === node || newEdge[i].to === node) {
+        removedEdge.push(newEdge[i]);
+      }
+    } 
+    newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
+    console.log(newEdge);
+    setEdges(newEdge)
+    setNumberOfNodes(numberOfNodes - 1);
+  }
+
+  /**
+   * Removes the last node and any edges connecting to that node
+   */
+  function removeLastNode() {
+    var nodes = data.nodes;
+    var lastNode = nodes.pop()?.data.id;
+
+    var newEdge = edges;
+    var removedEdge: Edge[] = [];
+    for(let i = 0; i < edges.length; i++) {
+      if(newEdge[i].from === lastNode || newEdge[i].to === lastNode) {
         removedEdge.push(newEdge[i]);
       }
     } 
@@ -121,6 +141,10 @@ export const GraphUI: FC = () => {
     }
   }
   
+  function resetGraph() {
+    
+  }
+
   function removeAllHighlight() {
     const newEdges = [...edges];
       for (let j = 0; j < newEdges.length; j++) {
@@ -252,6 +276,16 @@ export const GraphUI: FC = () => {
         >
           Add Node
         </Button>
+        
+        <Button
+          onClick={() => {
+            removeLastNode();
+          }}
+        >
+          Remove Last Node
+        </Button>
+
+        {/*
         <div style={{ border: "1px solid yellow" }}>
           <Form
             onSubmit={(event) => {
@@ -274,6 +308,7 @@ export const GraphUI: FC = () => {
             <Button type="submit">Submit</Button>
           </Form>
         </div>
+        */}
         <Button
           onClick={() => {
             setEdges([
@@ -330,6 +365,7 @@ export const GraphUI: FC = () => {
               const from = event.currentTarget.from.value;
               const to = event.currentTarget.to.value;
               removeEdge(from, to);
+              
 
               event.currentTarget.from.value = "";
               event.currentTarget.to.value = "";
