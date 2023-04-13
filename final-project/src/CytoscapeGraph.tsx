@@ -97,10 +97,28 @@ export const GraphUI: FC = () => {
         removedEdge.push(newEdge[i]);
       }
     } 
-    console.log(removedEdge);
     newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
+    console.log(newEdge);
     setEdges(newEdge)
     setNumberOfNodes(numberOfNodes - 1);
+  }
+
+  function removeEdge(from: String, to: String) {
+    var newEdge = edges;
+    var removedEdge: Edge[] = [];
+    for(let i = 0; i < newEdge.length; i++) {
+      if(newEdge[i].from === from && newEdge[i].to === to) {
+        removedEdge.push(newEdge[i]);
+      }
+    }
+    if(removedEdge.length == 0) {
+      alert("Edge does not exist")
+
+    }
+    else {
+      newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
+      setEdges(newEdge);
+    }
   }
   
   function removeAllHighlight() {
@@ -272,6 +290,9 @@ export const GraphUI: FC = () => {
                 weight: -1,
               });
               setEdges(newEdges);
+
+              event.currentTarget.from.valu = "";
+              event.currentTarget.to.value = "";
             }}
           >
             <label>Add edge:</label>
@@ -286,6 +307,32 @@ export const GraphUI: FC = () => {
             <Button type="submit">Submit</Button>
           </Form>
         </div>
+
+        <div style={{ border: "1px solid green" }}>
+          <Form
+            onSubmit={(event) => {
+              event.preventDefault();
+              const from = event.currentTarget.from.value;
+              const to = event.currentTarget.to.value;
+              removeEdge(from, to);
+
+              event.currentTarget.from.valu = "";
+              event.currentTarget.to.value = "";
+            }}
+          >
+            <label>Remove edge:</label>
+            <Form.Field>
+              <label>From:</label>
+              <input name="from" type="text" minLength={1} maxLength={1} required></input>
+            </Form.Field>
+            <Form.Field>
+              <label>To:</label>
+              <input name="to" type="text" minLength={1} maxLength={1} required></input>
+            </Form.Field>
+            <Button type="submit">Submit</Button>
+          </Form>
+        </div>
+
         {edges.map((e, idx) => (
           <EdgeDisplay
             edge={e}
