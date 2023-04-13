@@ -234,7 +234,7 @@ export const GraphUI: FC = () => {
         <Button 
           onClick={() => {
             setNumberOfNodes(numberOfNodes - 1);
-            removeNode();
+            //removeNode();
           }}>
           Remove Node
         </Button>
