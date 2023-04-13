@@ -91,6 +91,25 @@ export const GraphUI: FC = () => {
     setEdges(newEdges); 
   }
 
+  function directedToUndirected(cy: cytoscape.Core): Edge[] {
+    let paralellEdges = [...edges];
+    cy.edges().forEach((edge) => {
+      const source = edge.source();
+      const target = edge.target();
+      // check if there is a reverse edge already
+      const hasReverse = cy.edges().some((e) => {
+        console.log(e.data('source'), e.data('target'))
+        return e.data('source') === target.id() && e.data('target') === source.id();
+      });
+      console.log(source, target, hasReverse)
+      if (!hasReverse) {
+        // create a reverse edge
+        paralellEdges.push({from: target.id(), to: source.id(), weight: edge.data('label')});
+      }
+    });
+    return paralellEdges;
+  }
+
   return (
     <StyledDiv>
       <StyledInnerDiv>
@@ -116,17 +135,21 @@ export const GraphUI: FC = () => {
               onClick={async (event) => {
                 removeAllHighlight()
                 // clear node colors
-                if (cyRef.current) cyRef.current.nodes().forEach(((node) => {node.style('background-color', ''); return true;}));
-                const graph = new BellmansGraph(edges);
-                const res = await graph.bellmanFord(cyRef.current, start, end);
+                cyRef.current!.nodes().forEach(((node) => {node.style('background-color', ''); return true;}));
+                const undirected =  directedToUndirected(cyRef.current!);
+                const graph = new BellmansGraph(undirected);
+                const res = await graph.bellmanFord(cyRef.current!, start, end);
 
-                const newEdges = [...edges];
+                const newEdges = [...undirected];
                 for (let i = 0; i < res.length - 1; i++) {
                   for (let j = 0; j < newEdges.length; j++) {
-                    if (
+                    if ((
                       newEdges[j].from === res[i][0] &&
                       newEdges[j].to === res[i + 1][0]
-                    ) {
+                    ) || (
+                      newEdges[j].to === res[i][0] &&
+                      newEdges[j].from === res[i + 1][0]
+                    )) {
                       newEdges[j].isHighlighted = true;
                     }
                   }

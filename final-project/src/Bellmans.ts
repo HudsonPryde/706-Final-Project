@@ -30,7 +30,7 @@ export class Graph {
     startNode: string,
     endNode: string
   ): Promise<(string | number)[][]> {
-    
+    console.log(this.edges)
     const nodes = this.getNodes();
     const distances: Record<string, number> = {};
     const predecessors: Record<string, string> = {};
