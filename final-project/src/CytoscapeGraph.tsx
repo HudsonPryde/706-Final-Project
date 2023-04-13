@@ -83,23 +83,26 @@ export const GraphUI: FC = () => {
   };
   console.log(data);
 
-  /*
-  function removeNode() {
-    //removes the last and any edges connecting to it
-    var removedNode = data.nodes.pop()?.data.id 
-    console.log("removed node: " + removedNode);
-    data.edges.map(e => {
-      if(e.data.source === removedNode || e.data.target === removedNode) {
-        console.log("removed edges: " + e.data.source + "-" + e.data.target);
-        var index = data.edges.indexOf(e, 0);
-        console.log("index: " + index);
-        data.edges.splice(index, 1);
-      }
-    })
-    console.log(data);
-  }
-  */
+  /**
+   * Removes the last node and any edges connecting to that node
+   */
+  function removeLastNodeAndEdges() {
+    var nodes = data.nodes;
+    var lastNode = nodes.pop()?.data.id;
 
+    var newEdge = edges;
+    var removedEdge: Edge[] = [];
+    for(let i = 0; i < edges.length; i++) {
+      if(newEdge[i].from === lastNode || newEdge[i].to === lastNode) {
+        removedEdge.push(newEdge[i]);
+      }
+    } 
+    console.log(removedEdge);
+    newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
+    setEdges(newEdge)
+    setNumberOfNodes(numberOfNodes - 1);
+  }
+  
   function removeAllHighlight() {
     const newEdges = [...edges];
       for (let j = 0; j < newEdges.length; j++) {
@@ -233,10 +236,10 @@ export const GraphUI: FC = () => {
         </Button>
         <Button 
           onClick={() => {
-            setNumberOfNodes(numberOfNodes - 1);
-            //removeNode();
+            //setNumberOfNodes(numberOfNodes - 1) moved to the function below;
+            removeLastNodeAndEdges();
           }}>
-          Remove Node
+          Remove Node (Last node)
         </Button>
         <Button
           onClick={() => {
