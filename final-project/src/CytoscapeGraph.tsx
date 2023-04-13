@@ -86,14 +86,14 @@ export const GraphUI: FC = () => {
   /**
    * Removes the last node and any edges connecting to that node
    */
-  function removeLastNodeAndEdges() {
-    var nodes = data.nodes;
-    var lastNode = nodes.pop()?.data.id;
+  function removeNode(node: String) {
+    //var nodes = data.nodes;
+    //var lastNode = nodes.pop()?.data.id;
 
     var newEdge = edges;
     var removedEdge: Edge[] = [];
     for(let i = 0; i < edges.length; i++) {
-      if(newEdge[i].from === lastNode || newEdge[i].to === lastNode) {
+      if(newEdge[i].from === node || newEdge[i].to === node) {
         removedEdge.push(newEdge[i]);
       }
     } 
@@ -252,13 +252,28 @@ export const GraphUI: FC = () => {
         >
           Add Node
         </Button>
-        <Button 
-          onClick={() => {
-            //setNumberOfNodes(numberOfNodes - 1) moved to the function below;
-            removeLastNodeAndEdges();
-          }}>
-          Remove Node (Last node)
-        </Button>
+        <div style={{ border: "1px solid yellow" }}>
+          <Form
+            onSubmit={(event) => {
+              event.preventDefault();
+              const node = event.currentTarget.node.value;
+              removeNode(node);
+              event.currentTarget.node.value = "";
+            }}
+          >
+            <label>Remove node:</label>
+            <Form.Field>
+              <label>Node:</label>
+              <select name="node" required>
+                <option value="">Pick Node</option>
+                {data.nodes.map((node) => (
+                  <option value={node.data.id}>{node.data.id}</option>
+                ))}
+              </select>
+            </Form.Field>
+            <Button type="submit">Submit</Button>
+          </Form>
+        </div>
         <Button
           onClick={() => {
             setEdges([
@@ -291,7 +306,7 @@ export const GraphUI: FC = () => {
               });
               setEdges(newEdges);
 
-              event.currentTarget.from.valu = "";
+              event.currentTarget.from.value = "";
               event.currentTarget.to.value = "";
             }}
           >
@@ -316,7 +331,7 @@ export const GraphUI: FC = () => {
               const to = event.currentTarget.to.value;
               removeEdge(from, to);
 
-              event.currentTarget.from.valu = "";
+              event.currentTarget.from.value = "";
               event.currentTarget.to.value = "";
             }}
           >
