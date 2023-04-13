@@ -92,11 +92,11 @@ export const GraphUI: FC = () => {
 
     var newEdge = edges;
     var removedEdge: Edge[] = [];
-    for(let i = 0; i < edges.length; i++) {
-      if(newEdge[i].from === node || newEdge[i].to === node) {
+    for (let i = 0; i < edges.length; i++) {
+      if (newEdge[i].from === node || newEdge[i].to === node) {
         removedEdge.push(newEdge[i]);
       }
-    } 
+    }
     newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
     console.log(newEdge);
     setEdges(newEdge)
@@ -112,11 +112,11 @@ export const GraphUI: FC = () => {
 
     var newEdge = edges;
     var removedEdge: Edge[] = [];
-    for(let i = 0; i < edges.length; i++) {
-      if(newEdge[i].from === lastNode || newEdge[i].to === lastNode) {
+    for (let i = 0; i < edges.length; i++) {
+      if (newEdge[i].from === lastNode || newEdge[i].to === lastNode) {
         removedEdge.push(newEdge[i]);
       }
-    } 
+    }
     newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
     console.log(newEdge);
     setEdges(newEdge)
@@ -126,12 +126,12 @@ export const GraphUI: FC = () => {
   function removeEdge(from: String, to: String) {
     var newEdge = edges;
     var removedEdge: Edge[] = [];
-    for(let i = 0; i < newEdge.length; i++) {
-      if(newEdge[i].from === from && newEdge[i].to === to) {
+    for (let i = 0; i < newEdge.length; i++) {
+      if (newEdge[i].from === from && newEdge[i].to === to) {
         removedEdge.push(newEdge[i]);
       }
     }
-    if(removedEdge.length == 0) {
+    if (removedEdge.length == 0) {
       alert("Edge does not exist")
 
     }
@@ -140,17 +140,48 @@ export const GraphUI: FC = () => {
       setEdges(newEdge);
     }
   }
-  
+
+  function clearGraph() {
+    setEdges([]);
+    setNumberOfNodes(0);
+  }
+
   function resetGraph() {
-    
+    //if (numberOfNodes > 5) {
+      setEdges([]);
+      setNumberOfNodes(5);
+      setEdges([
+        { from: "A", to: "B", weight: 5, isHighlighted: false },
+        { from: "A", to: "C", weight: 2, isHighlighted: false },
+        { from: "C", to: "D", weight: 1, isHighlighted: false },
+        { from: "D", to: "B", weight: 1, isHighlighted: false },
+        { from: "A", to: "E", weight: 3, isHighlighted: false },
+        { from: "E", to: "B", weight: 2, isHighlighted: false },
+      ]);
+    //}
+    /*
+    else {
+      //To do: all nodes are generated in the same place, try to fix it
+      setEdges([]);
+      setNumberOfNodes(5);
+      setEdges([
+        { from: "A", to: "B", weight: 5, isHighlighted: false },
+        { from: "A", to: "C", weight: 2, isHighlighted: false },
+        { from: "C", to: "D", weight: 1, isHighlighted: false },
+        { from: "D", to: "B", weight: 1, isHighlighted: false },
+        { from: "A", to: "E", weight: 3, isHighlighted: false },
+        { from: "E", to: "B", weight: 2, isHighlighted: false },
+      ]);
+    }
+    */
   }
 
   function removeAllHighlight() {
     const newEdges = [...edges];
-      for (let j = 0; j < newEdges.length; j++) {
-        newEdges[j].isHighlighted = false;
-      }
-    setEdges(newEdges); 
+    for (let j = 0; j < newEdges.length; j++) {
+      newEdges[j].isHighlighted = false;
+    }
+    setEdges(newEdges);
   }
 
   function directedToUndirected(cy: cytoscape.Core): Edge[] {
@@ -166,7 +197,7 @@ export const GraphUI: FC = () => {
       console.log(source, target, hasReverse)
       if (!hasReverse) {
         // create a reverse edge
-        paralellEdges.push({from: target.id(), to: source.id(), weight: edge.data('label')});
+        paralellEdges.push({ from: target.id(), to: source.id(), weight: edge.data('label') });
       }
     });
     return paralellEdges;
@@ -182,7 +213,7 @@ export const GraphUI: FC = () => {
             const endStartSide = event.currentTarget.startSide.value;
             const endNode = event.currentTarget.end.value;
             const endNodeSide = event.currentTarget.endSide.value;
-            if(endStartSide == "server" && endStartSide == endNodeSide) {
+            if (endStartSide == "server" && endStartSide == endNodeSide) {
               alert("No server-server communication")
             }
             else {
@@ -197,8 +228,8 @@ export const GraphUI: FC = () => {
               onClick={async (event) => {
                 removeAllHighlight()
                 // clear node colors
-                cyRef.current!.nodes().forEach(((node) => {node.style('background-color', ''); return true;}));
-                const undirected =  directedToUndirected(cyRef.current!);
+                cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
+                const undirected = directedToUndirected(cyRef.current!);
                 const graph = new BellmansGraph(undirected);
                 const res = await graph.bellmanFord(cyRef.current!, start, end);
 
@@ -209,9 +240,9 @@ export const GraphUI: FC = () => {
                       newEdges[j].from === res[i][0] &&
                       newEdges[j].to === res[i + 1][0]
                     ) || (
-                      newEdges[j].to === res[i][0] &&
-                      newEdges[j].from === res[i + 1][0]
-                    )) {
+                        newEdges[j].to === res[i][0] &&
+                        newEdges[j].from === res[i + 1][0]
+                      )) {
                       newEdges[j].isHighlighted = true;
                     }
                   }
@@ -276,7 +307,7 @@ export const GraphUI: FC = () => {
         >
           Add Node
         </Button>
-        
+
         <Button
           onClick={() => {
             removeLastNode();
@@ -310,24 +341,14 @@ export const GraphUI: FC = () => {
         </div>
         */}
         <Button
-          onClick={() => {
-            setEdges([
-              { from: "A", to: "B", weight: 5, isHighlighted: false },
-              { from: "A", to: "C", weight: 2, isHighlighted: false },
-              { from: "C", to: "D", weight: 1, isHighlighted: false },
-              { from: "D", to: "B", weight: 1, isHighlighted: false },
-              { from: "A", to: "E", weight: 3, isHighlighted: false },
-              { from: "E", to: "B", weight: 2, isHighlighted: false },
-            ]);
-            setEdges(
-              edges.map((e) => ({
-                ...e,
-                isHighlighted: false,
-              }))
-            );
-          }}
+          onClick={() => clearGraph()}
         >
-          Reset
+          Clear Graph
+        </Button>
+        <Button
+          onClick={() => resetGraph()}
+        >
+          Reset Graph
         </Button>
         <div style={{ border: "1px solid red" }}>
           <Form
@@ -365,7 +386,7 @@ export const GraphUI: FC = () => {
               const from = event.currentTarget.from.value;
               const to = event.currentTarget.to.value;
               removeEdge(from, to);
-              
+
 
               event.currentTarget.from.value = "";
               event.currentTarget.to.value = "";
@@ -404,7 +425,7 @@ export const GraphUI: FC = () => {
           layout={layout}
           elements={CytoscapeComponent.normalizeElements(data)}
           style={{ width: "800px", height: "800px" }}
-          cy={(cy) => {cyRef.current = cy}}
+          cy={(cy) => { cyRef.current = cy }}
         />
       </div>
     </StyledDiv>
