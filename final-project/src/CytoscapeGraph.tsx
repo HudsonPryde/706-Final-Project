@@ -94,7 +94,6 @@ export const GraphUI: FC = () => {
       };
     })
   };
-  console.log(data);
 
   /**
    * Removes the node and any edges connecting to that node
@@ -111,7 +110,6 @@ export const GraphUI: FC = () => {
       }
     }
     newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
-    console.log(newEdge);
     setEdges(newEdge)
     setNumberOfNodes(numberOfNodes - 1);
   }
@@ -131,7 +129,6 @@ export const GraphUI: FC = () => {
       }
     }
     newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
-    console.log(newEdge);
     setEdges(newEdge)
     setNumberOfNodes(numberOfNodes - 1);
   }
@@ -181,10 +178,8 @@ export const GraphUI: FC = () => {
       const weight = edge.data('weight');
       // check if there is a reverse edge already
       const hasReverse = cy.edges().some((e) => {
-        console.log(e.data('source'), e.data('target'))
         return e.data('source') === target.id() && e.data('target') === source.id();
       });
-      console.log(source, target, hasReverse)
       if (!hasReverse) {
         // create a reverse edge
         paralellEdges.push({ from: target.id(), to: source.id(), weight: weight, isHighlighted: false, isCompliment: true });
@@ -231,14 +226,15 @@ export const GraphUI: FC = () => {
                 * Compute the path using the decentralized algorithm
                 */
                 onClick={async (event) => {
-                removeAllHighlight()
+                removeAllHighlight();
                 // clear node colors
                 cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
                 const undirected = directedToUndirected(cyRef.current!);
                 setEdges(undirected);
+                
                 const graph = new BellmansGraph(undirected);
                 const res = await graph.bellmanFord(cyRef.current!, start, end);
-
+                console.log(res);
                 const newEdges = [...undirected];
                 for (let i = 0; i < res.length - 1; i++) {
                   for (let j = 0; j < newEdges.length; j++) {
@@ -264,18 +260,20 @@ export const GraphUI: FC = () => {
               /**
               * Compute the path using the centralized algorithm
               */
-              onClick={() => {
+              onClick={async (event) => {
               removeAllHighlight()
 
               setDijkstra(!isDijkstra)
 
-              const graph = new DijkstraGraph(edges);
-              const res = graph.dijkstra(start, end);
-              var isNegative: Boolean = false;
+              cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
               const undirected = directedToUndirected(cyRef.current!);
               setEdges(undirected);
 
+              const graph = new DijkstraGraph(undirected);
+              const res = await graph.dijkstra(cyRef.current!, start, end);
               const newEdges = [...undirected];
+              var isNegative: Boolean = false;
+              console.log(res);
               for (let i = 0; i < res.length - 1; i++) {
                 for (let j = 0; j < newEdges.length; j++) {
                   if (newEdges[j].weight < 0) {

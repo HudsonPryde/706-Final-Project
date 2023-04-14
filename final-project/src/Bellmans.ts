@@ -81,7 +81,6 @@ export class Graph {
       animationSteps.push(() => {
         node.style('background-color', 'green');
       });
-      //console.log(current);
       path.unshift(predecessor);
       current = predecessor;
     }
@@ -100,20 +99,5 @@ export class Graph {
     });
 
     return path.map((node) => [node, distances[node]]);
-    // return path;
   }
 }
-
-// Usage
-// const edges: Edge[] = [
-//   { from: 'A', to: 'B', weight: 5 },
-//   { from: 'A', to: 'C', weight: 2 },
-//   { from: 'C', to: 'D', weight: 1 },
-//   { from: 'D', to: 'B', weight: 1 },
-//   { from: 'A', to: 'E', weight: 3 },
-//   { from: 'E', to: 'B', weight: 2 },
-// ];
-
-// const graph = new Graph(edges);
-// const shortestPath = graph.bellmanFord('A', 'B');
-// console.log(shortestPath); // [ 3, 5 ]

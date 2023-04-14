@@ -38,15 +38,18 @@ export class Graph {
   }
 
 
-  public dijkstra(
+  public async dijkstra(
+    cy: any,
     startNode: string,
     endNode: string
-    ): (string | number)[][] {
+    ): Promise<(string | number)[][]> {
+    console.log(this.edges)
     const nodes = this.getNodes();
     const distances: Record<string, number> = {};
     const predecessors: Record<string, string> = {};
     const N: Array<string> = []; // N is the array of definite least-cost path nodes
-    
+    const animationSteps: (() => void)[] = [];
+
     // INITIALIZATION: 
 
     N.push(startNode);
@@ -71,6 +74,7 @@ export class Graph {
     distances[startNode] = 0;
     delete predecessors[startNode];
 
+    animationSteps.push(() => cy.$(`[id='${startNode}']`).style('background-color', 'green'));
     // MAIN LOOP:
 
     while (N.length <= this.getNodes().length){
@@ -88,6 +92,12 @@ export class Graph {
           distances[neighbor.to] = distance;
           predecessors[neighbor.to] = minNode;
         }
+
+        animationSteps.push(() => {
+          cy.$(`[id='${neighbor.to}']`).style('background-color', 'orange');
+          cy.$(`[id='${neighbor.to}']`).animate({ style: { 'background-color': 'red' } }, { duration: 500 });
+          cy.$(`[id='${neighbor.to}']`).animate({ style: { 'background-color': 'orange' } }, { duration: 500 });
+        });
       }
       N.push(minNode);
       }
@@ -101,25 +111,25 @@ export class Graph {
         // no path return empty array
         return [];
       }
+      const node = cy.$id(current);
+      animationSteps.push(() => {
+        node.style('background-color', 'green');
+      });
       path.unshift(predecessor);
       current = predecessor;
     }
+
+    await new Promise<void>((resolve) => {
+      let i = 0;
+      const interval = setInterval(() => {
+        animationSteps[i]();
+        i++;
+        if (i >= animationSteps.length) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 1000);
+    });
     return path.map((node) => [node, distances[node]]);
   }
 } 
-// Usage
-// const edges: Edge[] = [
-//   { from: 'A', to: 'B', weight: 5 },
-//   { from: 'D', to: 'B', weight: 1 },
-//   { from: 'A', to: 'D', weight: 3 },
-//   { from: 'B', to: 'C', weight: 6 },
-//   { from: 'C', to: 'D', weight: 1 },
-//   { from: 'E', to: 'B', weight: 2 },
-//   { from: 'C', to: 'E', weight: 10 },
-//   { from: 'D', to: 'E', weight: 1 },
-//   { from: 'E', to: 'C', weight: 1},
-// ];
-
-// const graph = new Graph(edges);
-// const shortestPath = graph.dijkstra('D', 'C');
-// console.log(shortestPath); // [ 3, 5 ]
