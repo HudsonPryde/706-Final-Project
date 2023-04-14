@@ -252,8 +252,11 @@ export const GraphUI: FC = () => {
             }
             //Need to call setStart() or setEnd() on input change instead of this way
           }}>
-            <Button
-              onClick={async (event) => {
+            <Button 
+                /**
+                * Compute the path using the decentralized algorithm
+                */
+                onClick={async (event) => {
                 removeAllHighlight()
                 // clear node colors
                 cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
@@ -281,7 +284,13 @@ export const GraphUI: FC = () => {
             >
               Compute Decentralized
             </Button>
-            <Button onClick={() => {
+
+
+            <Button 
+              /**
+              * Compute the path using the centralized algorithm
+              */
+              onClick={() => {
               removeAllHighlight()
 
               setDijkstra(!isDijkstra)
@@ -312,9 +321,15 @@ export const GraphUI: FC = () => {
             >
               Compute Centralized
             </Button>
+
             <br></br>
+
             <label>Find shortest path</label>
-            <Form.Field>
+            <Form.Field 
+            /**
+            * Select the start node for the path
+            */
+            >
               <label>Starting node:</label>
               <select name="start" defaultValue="" required onChange={(event) => {
               }}>
@@ -330,7 +345,13 @@ export const GraphUI: FC = () => {
                 <option value="server">Server</option>
               </select>
             </Form.Field>
-            <Form.Field>
+
+
+            <Form.Field
+            /**
+            * Select the end node for the path
+            */
+            >
               <label>Ending node:</label>
               <select name="end" defaultValue="" required onChange={(event) => {
               }}>
@@ -374,36 +395,20 @@ export const GraphUI: FC = () => {
           Remove Last Node
         </Button>
 
-        {/*
-        <div style={{ border: "1px solid yellow" }}>
-          <Form
-            onSubmit={(event) => {
-              event.preventDefault();
-              const node = event.currentTarget.node.value;
-              removeNode(node);
-              event.currentTarget.node.value = "";
-            }}
-          >
-            <label>Remove node:</label>
-            <Form.Field>
-              <label>Node:</label>
-              <select name="node" required>
-                <option value="">Pick Node</option>
-                {data.nodes.map((node) => (
-                  <option value={node.data.id}>{node.data.id}</option>
-                ))}
-              </select>
-            </Form.Field>
-            <Button type="submit">Submit</Button>
-          </Form>
-        </div>
-        */}
         <Button
+          /**
+          * Clear the entire graph
+          * nodes, edges included...
+          */
           onClick={() => clearGraph()}
         >
           Clear Graph
         </Button>
+
         <Button
+          /**
+          * Resets the graph back to its default layout
+          */
           onClick={() => resetGraph()}
         >
           Reset Graph
