@@ -202,6 +202,7 @@ export const GraphUI: FC = () => {
     cy.edges().forEach((edge) => {
       const source = edge.source();
       const target = edge.target();
+      const weight = edge.data('weight');
       // check if there is a reverse edge already
       const hasReverse = cy.edges().some((e) => {
         console.log(e.data('source'), e.data('target'))
@@ -210,7 +211,7 @@ export const GraphUI: FC = () => {
       console.log(source, target, hasReverse)
       if (!hasReverse) {
         // create a reverse edge
-        paralellEdges.push({ from: target.id(), to: source.id(), weight: edge.data('label') });
+        paralellEdges.push({ from: target.id(), to: source.id(), weight: weight });
       }
     });
     return paralellEdges;
@@ -243,6 +244,7 @@ export const GraphUI: FC = () => {
                 // clear node colors
                 cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
                 const undirected = directedToUndirected(cyRef.current!);
+                setEdges(undirected);
                 const graph = new BellmansGraph(undirected);
                 const res = await graph.bellmanFord(cyRef.current!, start, end);
 
