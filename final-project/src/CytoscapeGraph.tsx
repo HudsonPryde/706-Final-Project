@@ -138,18 +138,20 @@ export const GraphUI: FC = () => {
 
   function removeEdge(from: String, to: String) {
     var newEdge = edges;
-    var removedEdge: Edge[] = [];
+    var removedEdges: Edge[] = [];
     for (let i = 0; i < newEdge.length; i++) {
-      if (newEdge[i].from === from && newEdge[i].to === to) {
-        removedEdge.push(newEdge[i]);
+      if ((newEdge[i].from === from && newEdge[i].to === to)
+      || (newEdge[i].from === to && newEdge[i].to === from))
+      {
+        removedEdges.push(newEdge[i]);
       }
     }
-    if (removedEdge.length == 0) {
+    if (removedEdges.length == 0) {
       alert("Edge does not exist")
 
     }
     else {
-      newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
+      newEdge = newEdge.filter(edge => removedEdges.indexOf(edge) < 0);
       setEdges(newEdge);
     }
   }
@@ -160,33 +162,7 @@ export const GraphUI: FC = () => {
   }
 
   function resetGraph() {
-    //if (numberOfNodes > 5) {
-    setEdges([]);
-    setNumberOfNodes(5);
-    setEdges([
-      { from: "A", to: "B", weight: 5, isHighlighted: false, isCompliment: false },
-      { from: "A", to: "C", weight: 2, isHighlighted: false, isCompliment: false },
-      { from: "C", to: "D", weight: 1, isHighlighted: false, isCompliment: false },
-      { from: "D", to: "B", weight: 1, isHighlighted: false, isCompliment: false },
-      { from: "A", to: "E", weight: 3, isHighlighted: false, isCompliment: false },
-      { from: "E", to: "B", weight: 2, isHighlighted: false, isCompliment: false },
-    ]);
-    //}
-    /*
-    else {
-      //To do: all nodes are generated in the same place, try to fix it
-      setEdges([]);
-      setNumberOfNodes(5);
-      setEdges([
-        { from: "A", to: "B", weight: 5, isHighlighted: false },
-        { from: "A", to: "C", weight: 2, isHighlighted: false },
-        { from: "C", to: "D", weight: 1, isHighlighted: false },
-        { from: "D", to: "B", weight: 1, isHighlighted: false },
-        { from: "A", to: "E", weight: 3, isHighlighted: false },
-        { from: "E", to: "B", weight: 2, isHighlighted: false },
-      ]);
-    }
-    */
+    window.location.reload();
   }
 
   function removeAllHighlight() {
@@ -218,7 +194,6 @@ export const GraphUI: FC = () => {
   }
 
   function setReverseWeight(edge: Edge, weight: number) {
-    console.log(edges);
     var from = edge.from;
     var to = edge.to;
     var newEdge = edges;
@@ -228,7 +203,6 @@ export const GraphUI: FC = () => {
       }
     }
     setEdges(newEdge);
-    console.log(edges);
   }
 
   return (
@@ -370,7 +344,6 @@ export const GraphUI: FC = () => {
             <Button type="submit">Set Nodes</Button>
           </Form>
         </div>
-
 
         <Button
           /**
