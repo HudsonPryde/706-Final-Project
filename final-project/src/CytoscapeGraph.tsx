@@ -272,10 +272,15 @@ export const GraphUI: FC = () => {
 
               const graph = new DijkstraGraph(edges);
               const res = graph.dijkstra(start, end);
+              var isNegative: Boolean = false;
 
               const newEdges = [...edges];
               for (let i = 0; i < res.length - 1; i++) {
                 for (let j = 0; j < newEdges.length; j++) {
+                  if (newEdges[j].weight < 0) {
+                    alert("Weights can't be negative for Centralized Computation")
+                    isNegative = true;
+                  }
                   if (
                     newEdges[j].from === res[i][0] &&
                     newEdges[j].to === res[i + 1][0]
@@ -284,7 +289,9 @@ export const GraphUI: FC = () => {
                   }
                 }
               }
-              setEdges(newEdges);
+              if(!isNegative) {
+                setEdges(newEdges);
+              }
             }}
             >
               Compute Centralized
