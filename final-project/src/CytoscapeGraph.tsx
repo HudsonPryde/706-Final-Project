@@ -171,7 +171,15 @@ export const GraphUI: FC = () => {
             <label>Find shortest path</label>
             <Form.Field>
               <label>Starting node:</label>
-              <input name="start" minLength={1} maxLength={1} required></input>
+               <select name="start" defaultValue="" required onChange={(event) => {
+              }}>
+                <option value="" disabled>Select a node</option>
+                {data.nodes.map((node) => (
+                  <option key={node.data.id} value={node.data.id}>
+                    {node.data.label}
+                  </option>
+                ))}
+              </select>
               <select name="startSide" required>
                 <option value="client">Client</option>
                 <option value="server">Server</option>
@@ -179,7 +187,15 @@ export const GraphUI: FC = () => {
             </Form.Field>
             <Form.Field>
               <label>Ending node:</label>
-              <input name="end" minLength={1} maxLength={1} required></input>
+              <select name="end" defaultValue="" required onChange={(event) => {
+              }}>
+                <option value="" disabled>Select a node</option>
+                {data.nodes.map((node) => (
+                  <option key={node.data.id} value={node.data.id}>
+                    {node.data.label}
+                  </option>
+                ))}
+              </select>
               <select name="endSide" required>
                 <option value="client">Client</option>
                 <option value="server">Server</option>
@@ -235,19 +251,36 @@ export const GraphUI: FC = () => {
             <label>Add edge:</label>
             <Form.Field>
               <label>From:</label>
-              <input name="from" type="text" minLength={1} maxLength={1} required></input>
+              <select name="from" defaultValue="" required onChange={(event) => {
+              }}>
+                <option value="" disabled>Select a node</option>
+                {data.nodes.map((node) => (
+                  <option key={node.data.id} value={node.data.id}>
+                    {node.data.label}
+                  </option>
+                ))}
+              </select>
             </Form.Field>
             <Form.Field>
               <label>To:</label>
-              <input name="to" type="text" minLength={1} maxLength={1} required></input>
+              <select name="to" defaultValue="" required onChange={(event) => {
+              }}>
+                <option value="" disabled>Select a node</option>
+                {data.nodes.map((node) => (
+                  <option key={node.data.id} value={node.data.id}>
+                    {node.data.label}
+                  </option>
+                ))}
+              </select>
             </Form.Field>
             <Button type="submit">Submit</Button>
           </Form>
+
         </div>
         {edges.map((e, idx) => (
           <EdgeDisplay
             edge={e}
-            defaultValue = {e.weight.toString()}
+            defaultValue={e.weight.toString()}
             onChange={(newWeight) => {
               const newEdges = [...edges];
               newEdges[idx].weight = Number(newWeight);
