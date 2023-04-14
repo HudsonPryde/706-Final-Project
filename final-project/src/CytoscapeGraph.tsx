@@ -426,7 +426,11 @@ export const GraphUI: FC = () => {
                 ))}
               </select>
             </Form.Field>
-            <Form.Field>
+
+            <Form.Field
+              /**
+              * Select the end node for the new edge
+              */>
               <label>To:</label>
               <select name="to" defaultValue="" required onChange={(event) => {
               }}>
@@ -459,7 +463,11 @@ export const GraphUI: FC = () => {
             }}
           >
             <label>Remove edge:</label>
-            <Form.Field>
+            <Form.Field
+              /**
+              * Select the start node for the edge to be removed
+              */
+              >
               <label>From:</label>
               <select name="from" defaultValue="" required onChange={(event) => {
               }}>
@@ -471,7 +479,12 @@ export const GraphUI: FC = () => {
                 ))}
               </select>
             </Form.Field>
-            <Form.Field>
+
+            <Form.Field
+              /**
+              * Select the end node for the edge to be removed
+              */
+              >
               <label>To:</label>
               <select name="to" defaultValue="" required onChange={(event) => {
               }}>
@@ -490,6 +503,9 @@ export const GraphUI: FC = () => {
         <p>Edges(Undirected): </p>
         {edges.filter(edge => edge.isCompliment === false).map((e, idx) => (
           <EdgeDisplay
+            /**
+            * Display the edges on the canvas
+            */
             edge={e}
             defaultValue={e.weight.toString()}
             onChange={(newWeight) => {
@@ -507,6 +523,9 @@ export const GraphUI: FC = () => {
         }}
       >
         <CytoscapeComponent
+          /**
+          * Create the Cytoscape canvas
+          */
           layout={layout}
           elements={CytoscapeComponent.normalizeElements(data)}
           style={{ width: "800px", height: "800px" }}
