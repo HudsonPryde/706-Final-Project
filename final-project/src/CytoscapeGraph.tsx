@@ -1,5 +1,6 @@
 import React, { FC, useState, useRef } from "react";
 import { Graph as BellmansGraph, Edge } from "./Bellmans";
+import { Graph as DijkstraGraph } from "./Dijkstra";
 import { Button, Form, Input } from "semantic-ui-react";
 import CytoscapeComponent from "react-cytoscapejs";
 import { StyledDiv, StyledInnerDiv, StyledText } from "./Styles";
@@ -269,7 +270,6 @@ export const GraphUI: FC = () => {
 
               setDijkstra(!isDijkstra)
 
-              /* Uncomment when dijkstra algorithm is added
               const graph = new DijkstraGraph(edges);
               const res = graph.dijkstra(start, end);
 
@@ -285,7 +285,6 @@ export const GraphUI: FC = () => {
                 }
               }
               setEdges(newEdges);
-              */
             }}
             >
               Compute Centralized
