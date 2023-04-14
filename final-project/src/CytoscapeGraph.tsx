@@ -217,6 +217,20 @@ export const GraphUI: FC = () => {
     return paralellEdges;
   }
 
+  function setReverseWeight(edge: Edge, weight: number) {
+    console.log(edges);
+    var from = edge.from;
+    var to = edge.to;
+    var newEdge = edges;
+    for (let i = 0; i < newEdge.length; i++) {
+      if (newEdge[i].from === to && newEdge[i].to === from) {
+        newEdge[i].weight = weight;
+      }
+    }
+    setEdges(newEdge);
+    console.log(edges);
+  }
+
   return (
     <StyledDiv>
       <StyledInnerDiv>
@@ -444,7 +458,6 @@ export const GraphUI: FC = () => {
           </Form>
         </div>
 
-
         <div style={{ border: "1px solid green" }}>
           <Form
             /**
@@ -489,14 +502,15 @@ export const GraphUI: FC = () => {
             <Button type="submit">Submit</Button>
           </Form>
         </div>
-
-        {edges.map((e, idx) => (
+        
+        {edges.map((e, idx) => ( 
           <EdgeDisplay
             edge={e}
             defaultValue={e.weight.toString()}
             onChange={(newWeight) => {
               const newEdges = [...edges];
               newEdges[idx].weight = Number(newWeight);
+              setReverseWeight(newEdges[idx], Number(newWeight));
               setEdges(newEdges);
             }}
           />
