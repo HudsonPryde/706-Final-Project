@@ -3,6 +3,7 @@ export interface Edge {
   to: string;
   weight: number;
   isHighlighted?: boolean;
+  isCompliment?: boolean;
 }
 
 export class Graph {

@@ -36,12 +36,12 @@ export const GraphUI: FC = () => {
   const [endSide, setEndSide] = useState('');
 
   const [edges, setEdges] = useState<Edge[]>([
-    { from: "A", to: "B", weight: 5, isHighlighted: false },
-    { from: "A", to: "C", weight: 2, isHighlighted: false },
-    { from: "C", to: "D", weight: 1, isHighlighted: false },
-    { from: "D", to: "B", weight: 1, isHighlighted: false },
-    { from: "A", to: "E", weight: 3, isHighlighted: false },
-    { from: "E", to: "B", weight: 2, isHighlighted: false },
+    { from: "A", to: "B", weight: 5, isHighlighted: false, isCompliment: false },
+    { from: "A", to: "C", weight: 2, isHighlighted: false, isCompliment: false },
+    { from: "C", to: "D", weight: 1, isHighlighted: false, isCompliment: false },
+    { from: "D", to: "B", weight: 1, isHighlighted: false, isCompliment: false },
+    { from: "A", to: "E", weight: 3, isHighlighted: false, isCompliment: false },
+    { from: "E", to: "B", weight: 2, isHighlighted: false, isCompliment: false },
   ]);
 
   const [isDijkstra, setDijkstra] = useState(false);
@@ -164,12 +164,12 @@ export const GraphUI: FC = () => {
     setEdges([]);
     setNumberOfNodes(5);
     setEdges([
-      { from: "A", to: "B", weight: 5, isHighlighted: false },
-      { from: "A", to: "C", weight: 2, isHighlighted: false },
-      { from: "C", to: "D", weight: 1, isHighlighted: false },
-      { from: "D", to: "B", weight: 1, isHighlighted: false },
-      { from: "A", to: "E", weight: 3, isHighlighted: false },
-      { from: "E", to: "B", weight: 2, isHighlighted: false },
+      { from: "A", to: "B", weight: 5, isHighlighted: false, isCompliment: false },
+      { from: "A", to: "C", weight: 2, isHighlighted: false, isCompliment: false },
+      { from: "C", to: "D", weight: 1, isHighlighted: false, isCompliment: false },
+      { from: "D", to: "B", weight: 1, isHighlighted: false, isCompliment: false },
+      { from: "A", to: "E", weight: 3, isHighlighted: false, isCompliment: false },
+      { from: "E", to: "B", weight: 2, isHighlighted: false, isCompliment: false },
     ]);
     //}
     /*
@@ -211,7 +211,7 @@ export const GraphUI: FC = () => {
       console.log(source, target, hasReverse)
       if (!hasReverse) {
         // create a reverse edge
-        paralellEdges.push({ from: target.id(), to: source.id(), weight: weight });
+        paralellEdges.push({ from: target.id(), to: source.id(), weight: weight, isHighlighted: false, isCompliment: true });
       }
     });
     return paralellEdges;
@@ -422,6 +422,7 @@ export const GraphUI: FC = () => {
                 from: event.currentTarget.from.value,
                 to: event.currentTarget.to.value,
                 weight: -1,
+                isCompliment: false,
               });
               setEdges(newEdges);
 
@@ -503,7 +504,7 @@ export const GraphUI: FC = () => {
           </Form>
         </div>
         
-        {edges.map((e, idx) => ( 
+        {edges.filter(edge => edge.isCompliment === false).map((e, idx) => (
           <EdgeDisplay
             edge={e}
             defaultValue={e.weight.toString()}
