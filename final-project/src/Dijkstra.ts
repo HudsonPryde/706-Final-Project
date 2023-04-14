@@ -24,6 +24,18 @@ export interface Edge {
     private getNeighbors(node: string): Edge[] {
       return this.edges.filter((edge) => edge.from === node);
     }
+
+    private findMinimum(nextNodes: Array<string>, distances: Record<string, number>): string{
+      let min: number = -1
+      let minNode: string = '';
+      for (const n in nextNodes){
+        if (min == -1 || distances[nextNodes[n]] < min) {
+          min = distances[nextNodes[n]];
+          minNode = nextNodes[n];
+        }
+      }
+      return minNode
+    }
   
 
     public dijkstra(
@@ -44,7 +56,7 @@ export interface Edge {
   
       for (const node in nodes){
           distances[nodes[node]] = Infinity;
-          predecessors[nodes[node]] = 'null';
+          predecessors[nodes[node]] = 'null';        
       }
   
       for (const node in nodes){
@@ -59,37 +71,25 @@ export interface Edge {
       distances[startNode] = 0;
       delete predecessors[startNode];
   
-  
       // MAIN LOOP:
   
       while (N.length <= this.getNodes().length){
-        const nextNodes: Array<string> = []
-        let min: number | undefined = undefined
-        let minNode: string = '';
-  
-        for (const node in nodes){
-          if (N.indexOf(nodes[node]) == -1 && distances[nodes[node]] < Infinity) { 
-            nextNodes.push(nodes[node])
-          } 
-          for (const n in nextNodes){
-            if (min !=undefined && distances[nextNodes[n]] < min) {
-              min = distances[nextNodes[n]];
-              minNode = nextNodes[n];
-            }
+
+        const nextNodes: Array<string> = nodes.filter(next => N.indexOf(next) == -1 && distances[next] < Infinity)
+        const minNode: string = this.findMinimum(nextNodes, distances)
+
+        const neighbors = this.getNeighbors(minNode)
+          
+        for (const neighbor of neighbors) {
+          // check all neighbours of the new node;
+          const distance = distances[minNode] + neighbor.weight;
+          if (distance < distances[neighbor.to]) {
+            // update the distance and the predecessor if new dist is less than previous
+            distances[neighbor.to] = distance;
+            predecessors[neighbor.to] = minNode;
           }
-  
-          const neighbors = this.getNeighbors(minNode)
-          for (const neighbor of neighbors) {
-            // check all neighbours of the new node;
-            const distance = distances[minNode] + neighbor.weight;
-            if (distance < distances[neighbor.to]) {
-              // update the distance and the predecessor if new dist is less than previous
-              distances[neighbor.to] = distance;
-              predecessors[neighbor.to] = minNode;
-            }
-          }
-          N.push(minNode);
-          }
+        }
+        N.push(minNode);
         }
   
       const path: string[] = [endNode];
@@ -106,18 +106,20 @@ export interface Edge {
       }
       return path.map((node) => [node, distances[node]]);
     }
-  
-} 
+  } 
 // Usage
-const edges: Edge[] = [
-  { from: 'A', to: 'B', weight: 5 },
-  { from: 'A', to: 'C', weight: 2 },
-  { from: 'C', to: 'D', weight: 1 },
-  { from: 'D', to: 'B', weight: 1 },
-  { from: 'A', to: 'E', weight: 3 },
-  { from: 'E', to: 'B', weight: 2 },
-];
+// const edges: Edge[] = [
+//   { from: 'A', to: 'B', weight: 5 },
+//   { from: 'D', to: 'B', weight: 1 },
+//   { from: 'A', to: 'D', weight: 3 },
+//   { from: 'B', to: 'C', weight: 6 },
+//   { from: 'C', to: 'D', weight: 1 },
+//   { from: 'E', to: 'B', weight: 2 },
+//   { from: 'C', to: 'E', weight: 10 },
+//   { from: 'D', to: 'E', weight: 1 },
+//   { from: 'E', to: 'C', weight: 1},
+// ];
 
-const graph = new Graph(edges);
-const shortestPath = graph.dijkstra('A', 'B');
-console.log(shortestPath); // [ 3, 5 ]
+// const graph = new Graph(edges);
+// const shortestPath = graph.dijkstra('D', 'C');
+// console.log(shortestPath); // [ 3, 5 ]
