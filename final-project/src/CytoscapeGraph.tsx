@@ -138,18 +138,20 @@ export const GraphUI: FC = () => {
 
   function removeEdge(from: String, to: String) {
     var newEdge = edges;
-    var removedEdge: Edge[] = [];
+    var removedEdges: Edge[] = [];
     for (let i = 0; i < newEdge.length; i++) {
-      if (newEdge[i].from === from && newEdge[i].to === to) {
-        removedEdge.push(newEdge[i]);
+      if ((newEdge[i].from === from && newEdge[i].to === to)
+      || (newEdge[i].from === to && newEdge[i].to === from))
+      {
+        removedEdges.push(newEdge[i]);
       }
     }
-    if (removedEdge.length == 0) {
+    if (removedEdges.length == 0) {
       alert("Edge does not exist")
 
     }
     else {
-      newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
+      newEdge = newEdge.filter(edge => removedEdges.indexOf(edge) < 0);
       setEdges(newEdge);
     }
   }
