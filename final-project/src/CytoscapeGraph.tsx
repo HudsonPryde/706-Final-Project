@@ -162,33 +162,7 @@ export const GraphUI: FC = () => {
   }
 
   function resetGraph() {
-    //if (numberOfNodes > 5) {
-    setEdges([]);
-    setNumberOfNodes(5);
-    setEdges([
-      { from: "A", to: "B", weight: 5, isHighlighted: false, isCompliment: false },
-      { from: "A", to: "C", weight: 2, isHighlighted: false, isCompliment: false },
-      { from: "C", to: "D", weight: 1, isHighlighted: false, isCompliment: false },
-      { from: "D", to: "B", weight: 1, isHighlighted: false, isCompliment: false },
-      { from: "A", to: "E", weight: 3, isHighlighted: false, isCompliment: false },
-      { from: "E", to: "B", weight: 2, isHighlighted: false, isCompliment: false },
-    ]);
-    //}
-    /*
-    else {
-      //To do: all nodes are generated in the same place, try to fix it
-      setEdges([]);
-      setNumberOfNodes(5);
-      setEdges([
-        { from: "A", to: "B", weight: 5, isHighlighted: false },
-        { from: "A", to: "C", weight: 2, isHighlighted: false },
-        { from: "C", to: "D", weight: 1, isHighlighted: false },
-        { from: "D", to: "B", weight: 1, isHighlighted: false },
-        { from: "A", to: "E", weight: 3, isHighlighted: false },
-        { from: "E", to: "B", weight: 2, isHighlighted: false },
-      ]);
-    }
-    */
+    window.location.reload();
   }
 
   function removeAllHighlight() {
@@ -220,7 +194,6 @@ export const GraphUI: FC = () => {
   }
 
   function setReverseWeight(edge: Edge, weight: number) {
-    console.log(edges);
     var from = edge.from;
     var to = edge.to;
     var newEdge = edges;
@@ -230,7 +203,6 @@ export const GraphUI: FC = () => {
       }
     }
     setEdges(newEdge);
-    console.log(edges);
   }
 
   return (
@@ -351,7 +323,6 @@ export const GraphUI: FC = () => {
             <Button type="submit">Set Nodes</Button>
           </Form>
         </div>
-
 
         <Button
           /**
