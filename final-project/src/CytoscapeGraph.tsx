@@ -61,18 +61,6 @@ export const GraphUI: FC = () => {
   };
 
   const data: { nodes: ElementDefinition[]; edges: ElementDefinition[] } = {
-    nodes: Array.from({ length: numberOfNodes }, (x, i) => {
-      const letter = (i + 10).toString(36).toUpperCase();
-
-      return {
-        data: {
-          id: letter,
-          label: letter,
-        },
-        selectable: false,
-        selected: selectedNodes.includes((i + 10).toString(36).toUpperCase()),
-      };
-    }),
     edges: edges.map((e) => ({
       data: {
         source: e.from,
@@ -83,9 +71,27 @@ export const GraphUI: FC = () => {
       selectable: false,
       selected: e.isHighlighted,
       style: {
-        'label': e.weight.toString()
-      }
+        'label': e.weight.toString(),
+        'font-size': '30px',
+        'border-color': 'red',
+        'width': '1px'
+      },
     })),
+    nodes: Array.from({ length: numberOfNodes }, (x, i) => {
+      const letter = (i + 10).toString(36).toUpperCase();
+
+      return {
+        data: {
+          id: letter,
+          label: letter,
+        },
+        selectable: false,
+        selected: selectedNodes.includes((i + 10).toString(36).toUpperCase()),
+        style: {
+          'font-size': '30px'
+        }
+      };
+    })
   };
   console.log(data);
 
@@ -154,16 +160,16 @@ export const GraphUI: FC = () => {
 
   function resetGraph() {
     //if (numberOfNodes > 5) {
-      setEdges([]);
-      setNumberOfNodes(5);
-      setEdges([
-        { from: "A", to: "B", weight: 5, isHighlighted: false },
-        { from: "A", to: "C", weight: 2, isHighlighted: false },
-        { from: "C", to: "D", weight: 1, isHighlighted: false },
-        { from: "D", to: "B", weight: 1, isHighlighted: false },
-        { from: "A", to: "E", weight: 3, isHighlighted: false },
-        { from: "E", to: "B", weight: 2, isHighlighted: false },
-      ]);
+    setEdges([]);
+    setNumberOfNodes(5);
+    setEdges([
+      { from: "A", to: "B", weight: 5, isHighlighted: false },
+      { from: "A", to: "C", weight: 2, isHighlighted: false },
+      { from: "C", to: "D", weight: 1, isHighlighted: false },
+      { from: "D", to: "B", weight: 1, isHighlighted: false },
+      { from: "A", to: "E", weight: 3, isHighlighted: false },
+      { from: "E", to: "B", weight: 2, isHighlighted: false },
+    ]);
     //}
     /*
     else {
@@ -324,9 +330,9 @@ export const GraphUI: FC = () => {
 
 
         <Button
-        /**
-        * Adds a new node to the graph
-        */
+          /**
+          * Adds a new node to the graph
+          */
           onClick={() => {
             setNumberOfNodes(numberOfNodes + 1);
           }}
@@ -336,9 +342,9 @@ export const GraphUI: FC = () => {
 
 
         <Button
-        /**
-        * Removes the last node in the graph
-        */
+          /**
+          * Removes the last node in the graph
+          */
           onClick={() => {
             removeLastNode();
           }}
@@ -384,9 +390,9 @@ export const GraphUI: FC = () => {
 
         <div style={{ border: "1px solid red" }}>
           <Form
-          /**
-          * Form for adding new edges to the graph
-          */
+            /**
+            * Form for adding new edges to the graph
+            */
             onSubmit={(event) => {
               event.preventDefault();
               const newEdges = [...edges];
@@ -429,13 +435,13 @@ export const GraphUI: FC = () => {
             <Button type="submit">Submit</Button>
           </Form>
         </div>
-        
+
 
         <div style={{ border: "1px solid green" }}>
           <Form
-          /**
-          * Form for removing edges from the graph
-          */
+            /**
+            * Form for removing edges from the graph
+            */
             onSubmit={(event) => {
               event.preventDefault();
               const from = event.currentTarget.from.value;
