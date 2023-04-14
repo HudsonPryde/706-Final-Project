@@ -5,7 +5,7 @@ import { Button, Form, Input } from "semantic-ui-react";
 import CytoscapeComponent from "react-cytoscapejs";
 import { StyledDiv, StyledInnerDiv, StyledText } from "./Styles";
 import { ElementDefinition } from "cytoscape";
-
+import "./CytoscapeGraph.css";
 
 export interface EdgeProps {
   edge: Edge;
@@ -74,8 +74,8 @@ export const GraphUI: FC = () => {
       style: {
         'label': e.weight.toString(),
         'font-size': '30px',
-        'border-color': 'red',
-        'width': '1px'
+        'width': '1px',
+        'color': 'white'
       },
     })),
     nodes: Array.from({ length: numberOfNodes }, (x, i) => {
@@ -89,7 +89,8 @@ export const GraphUI: FC = () => {
         selectable: false,
         selected: selectedNodes.includes((i + 10).toString(36).toUpperCase()),
         style: {
-          'font-size': '30px'
+          'font-size': '30px',
+          'color': 'white'
         }
       };
     })
