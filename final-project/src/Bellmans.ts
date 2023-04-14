@@ -44,6 +44,7 @@ export class Graph {
     }
 
     distances[startNode] = 0;
+    animationSteps.push(() => cy.$(`[id='${startNode}']`).style('background-color', 'green'));
 
     // calculate distances
     for (let i = 0; i < nodes.length - 1; i++) {
@@ -84,7 +85,7 @@ export class Graph {
       path.unshift(predecessor);
       current = predecessor;
     }
-    animationSteps.push(() => cy.$(`[id='${startNode}']`).style('background-color', 'green'));
+    
 
     await new Promise<void>((resolve) => {
       let i = 0;
