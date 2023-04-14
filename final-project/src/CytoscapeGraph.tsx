@@ -272,23 +272,28 @@ export const GraphUI: FC = () => {
               const graph = new DijkstraGraph(edges);
               const res = graph.dijkstra(start, end);
               var isNegative: Boolean = false;
+              const undirected = directedToUndirected(cyRef.current!);
+              setEdges(undirected);
 
-              const newEdges = [...edges];
+              const newEdges = [...undirected];
               for (let i = 0; i < res.length - 1; i++) {
                 for (let j = 0; j < newEdges.length; j++) {
                   if (newEdges[j].weight < 0) {
                     alert("Weights can't be negative for Centralized Computation")
                     isNegative = true;
                   }
-                  if (
+                  if ((
                     newEdges[j].from === res[i][0] &&
                     newEdges[j].to === res[i + 1][0]
-                  ) {
+                  ) || (
+                      newEdges[j].to === res[i][0] &&
+                      newEdges[j].from === res[i + 1][0]
+                    )) {
                     newEdges[j].isHighlighted = true;
                   }
                 }
               }
-              if(!isNegative) {
+              if (!isNegative) {
                 setEdges(newEdges);
               }
             }}
@@ -408,7 +413,7 @@ export const GraphUI: FC = () => {
               event.currentTarget.to.value = "";
             }}
           >
-            <label>Add edge:</label>
+            <label>Add edge(Undirected):</label>
             <Form.Field>
               <label>From:</label>
               <select name="from" defaultValue="" required onChange={(event) => {
@@ -482,6 +487,7 @@ export const GraphUI: FC = () => {
           </Form>
         </div>
         
+        <p>Edges(Undirected): </p>
         {edges.filter(edge => edge.isCompliment === false).map((e, idx) => (
           <EdgeDisplay
             edge={e}
