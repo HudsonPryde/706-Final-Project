@@ -12,7 +12,11 @@ export interface EdgeProps {
   defaultValue: string;
   onChange: (a: string) => void;
 }
-export const EdgeDisplay: FC<EdgeProps> = ({ edge, defaultValue, onChange }: EdgeProps) => {
+export const EdgeDisplay: FC<EdgeProps> = ({
+  edge,
+  defaultValue,
+  onChange,
+}: EdgeProps) => {
   return (
     <div>
       <StyledText>
@@ -30,23 +34,88 @@ export const EdgeDisplay: FC<EdgeProps> = ({ edge, defaultValue, onChange }: Edg
 };
 
 export const GraphUI: FC = () => {
-  const [start, setStart] = useState('');
-  const [end, setEnd] = useState('');
-  const [startSide, setStartSide] = useState('');
-  const [endSide, setEndSide] = useState('');
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [startSide, setStartSide] = useState("");
+  const [endSide, setEndSide] = useState("");
+
+  const addEdges = (from: string, to: string) => {
+    if (!from || !to || from === to) {
+      return;
+    }
+    console.log("original: ", from, to);
+    let isDuplicate = false;
+    edges.forEach((e) => {
+      console.log(from, to);
+      if (
+        (e.from === from && e.to === to) ||
+        (e.to === from && e.from === to)
+      ) {
+        isDuplicate = true;
+        return;
+      }
+    });
+
+    if (isDuplicate) return;
+
+    const newEdges = [...edges];
+    newEdges.push({
+      from: from,
+      to: to,
+      weight: -1,
+      isCompliment: false,
+    });
+    setEdges(newEdges);
+  };
 
   const [edges, setEdges] = useState<Edge[]>([
-    { from: "A", to: "B", weight: 5, isHighlighted: false, isCompliment: false },
-    { from: "A", to: "C", weight: 2, isHighlighted: false, isCompliment: false },
-    { from: "C", to: "D", weight: 1, isHighlighted: false, isCompliment: false },
-    { from: "D", to: "B", weight: 1, isHighlighted: false, isCompliment: false },
-    { from: "A", to: "E", weight: 3, isHighlighted: false, isCompliment: false },
-    { from: "E", to: "B", weight: 2, isHighlighted: false, isCompliment: false },
+    {
+      from: "A",
+      to: "B",
+      weight: 5,
+      isHighlighted: false,
+      isCompliment: false,
+    },
+    {
+      from: "A",
+      to: "C",
+      weight: 2,
+      isHighlighted: false,
+      isCompliment: false,
+    },
+    {
+      from: "C",
+      to: "D",
+      weight: 1,
+      isHighlighted: false,
+      isCompliment: false,
+    },
+    {
+      from: "D",
+      to: "B",
+      weight: 1,
+      isHighlighted: false,
+      isCompliment: false,
+    },
+    {
+      from: "A",
+      to: "E",
+      weight: 3,
+      isHighlighted: false,
+      isCompliment: false,
+    },
+    {
+      from: "E",
+      to: "B",
+      weight: 2,
+      isHighlighted: false,
+      isCompliment: false,
+    },
   ]);
 
   const [isDijkstra, setDijkstra] = useState(false);
-  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const [numberOfNodes, setNumberOfNodes] = useState(5);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const cyRef = useRef<cytoscape.Core | null>(null);
 
   const layout = {
@@ -66,16 +135,16 @@ export const GraphUI: FC = () => {
       data: {
         source: e.from,
         target: e.to,
-        label: '',
+        label: "",
         weight: e.weight,
       },
       selectable: false,
       selected: e.isHighlighted,
       style: {
-        'label': e.weight.toString(),
-        'font-size': '30px',
-        'width': '1px',
-        'color': 'white'
+        label: e.weight.toString(),
+        "font-size": "30px",
+        width: "1px",
+        color: "white",
       },
     })),
     nodes: Array.from({ length: numberOfNodes }, (x, i) => {
@@ -86,14 +155,14 @@ export const GraphUI: FC = () => {
           id: letter,
           label: letter,
         },
-        selectable: false,
-        selected: selectedNodes.includes((i + 10).toString(36).toUpperCase()),
+        selectable: true,
+        selected: false,
         style: {
-          'font-size': '30px',
-          'color': 'white'
-        }
+          "font-size": "30px",
+          color: "white",
+        },
       };
-    })
+    }),
   };
 
   /**
@@ -110,8 +179,8 @@ export const GraphUI: FC = () => {
         removedEdge.push(newEdge[i]);
       }
     }
-    newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
-    setEdges(newEdge)
+    newEdge = newEdge.filter((edge) => removedEdge.indexOf(edge) < 0);
+    setEdges(newEdge);
     setNumberOfNodes(numberOfNodes - 1);
   }
 
@@ -119,17 +188,17 @@ export const GraphUI: FC = () => {
     var newEdge = edges;
     var removedEdges: Edge[] = [];
     for (let i = 0; i < newEdge.length; i++) {
-      if ((newEdge[i].from === from && newEdge[i].to === to)
-        || (newEdge[i].from === to && newEdge[i].to === from)) {
+      if (
+        (newEdge[i].from === from && newEdge[i].to === to) ||
+        (newEdge[i].from === to && newEdge[i].to === from)
+      ) {
         removedEdges.push(newEdge[i]);
       }
     }
     if (removedEdges.length == 0) {
-      alert("Edge does not exist")
-
-    }
-    else {
-      newEdge = newEdge.filter(edge => removedEdges.indexOf(edge) < 0);
+      alert("Edge does not exist");
+    } else {
+      newEdge = newEdge.filter((edge) => removedEdges.indexOf(edge) < 0);
       setEdges(newEdge);
     }
   }
@@ -156,14 +225,22 @@ export const GraphUI: FC = () => {
     cy.edges().forEach((edge) => {
       const source = edge.source();
       const target = edge.target();
-      const weight = edge.data('weight');
+      const weight = edge.data("weight");
       // check if there is a reverse edge already
       const hasReverse = cy.edges().some((e) => {
-        return e.data('source') === target.id() && e.data('target') === source.id();
+        return (
+          e.data("source") === target.id() && e.data("target") === source.id()
+        );
       });
       if (!hasReverse) {
         // create a reverse edge
-        paralellEdges.push({ from: target.id(), to: source.id(), weight: weight, isHighlighted: false, isCompliment: true });
+        paralellEdges.push({
+          from: target.id(),
+          to: source.id(),
+          weight: weight,
+          isHighlighted: false,
+          isCompliment: true,
+        });
       }
     });
     return paralellEdges;
@@ -185,31 +262,35 @@ export const GraphUI: FC = () => {
     <StyledDiv>
       <StyledInnerDiv>
         <div style={{ border: "5px solid blue", padding: "10px" }}>
-          <Form onSubmit={(event) => {
-            event.preventDefault();
-            const startNode = event.currentTarget.start.value;
-            const endStartSide = event.currentTarget.startSide.value;
-            const endNode = event.currentTarget.end.value;
-            const endNodeSide = event.currentTarget.endSide.value;
-            if (endStartSide == "server" && endStartSide == endNodeSide) {
-              alert("No server-server communication")
-            }
-            else {
-              setStart(startNode);
-              setStartSide(endStartSide);
-              setEnd(endNode);
-              setEndSide(endNodeSide);
-            }
-            //Need to call setStart() or setEnd() on input change instead of this way
-          }}>
+          <Form
+            onSubmit={(event) => {
+              event.preventDefault();
+              const startNode = event.currentTarget.start.value;
+              const endStartSide = event.currentTarget.startSide.value;
+              const endNode = event.currentTarget.end.value;
+              const endNodeSide = event.currentTarget.endSide.value;
+              if (endStartSide == "server" && endStartSide == endNodeSide) {
+                alert("No server-server communication");
+              } else {
+                setStart(startNode);
+                setStartSide(endStartSide);
+                setEnd(endNode);
+                setEndSide(endNodeSide);
+              }
+              //Need to call setStart() or setEnd() on input change instead of this way
+            }}
+          >
             <Button
               /**
-              * Compute the path using the decentralized algorithm
-              */
+               * Compute the path using the decentralized algorithm
+               */
               onClick={async (event) => {
                 removeAllHighlight();
                 // clear node colors
-                cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
+                cyRef.current!.nodes().forEach((node) => {
+                  node.style("background-color", "");
+                  return true;
+                });
                 const undirected = directedToUndirected(cyRef.current!);
                 setEdges(undirected);
 
@@ -219,13 +300,12 @@ export const GraphUI: FC = () => {
                 const newEdges = [...undirected];
                 for (let i = 0; i < res.length - 1; i++) {
                   for (let j = 0; j < newEdges.length; j++) {
-                    if ((
-                      newEdges[j].from === res[i][0] &&
-                      newEdges[j].to === res[i + 1][0]
-                    ) || (
-                        newEdges[j].to === res[i][0] &&
-                        newEdges[j].from === res[i + 1][0]
-                      )) {
+                    if (
+                      (newEdges[j].from === res[i][0] &&
+                        newEdges[j].to === res[i + 1][0]) ||
+                      (newEdges[j].to === res[i][0] &&
+                        newEdges[j].from === res[i + 1][0])
+                    ) {
                       newEdges[j].isHighlighted = true;
                     }
                   }
@@ -238,8 +318,8 @@ export const GraphUI: FC = () => {
 
             <Button
               /**
-              * Compute the path using the centralized algorithm
-              */
+               * Compute the path using the centralized algorithm
+               */
               onClick={async (event) => {
                 var isNegative: Boolean = false;
 
@@ -256,27 +336,37 @@ export const GraphUI: FC = () => {
                   removeAllHighlight()
                   setDijkstra(!isDijkstra)
 
-                  cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
-                  const undirected = directedToUndirected(cyRef.current!);
-                  setEdges(undirected);
+                cyRef.current!.nodes().forEach((node) => {
+                  node.style("background-color", "");
+                  return true;
+                });
+                const undirected = directedToUndirected(cyRef.current!);
+                setEdges(undirected);
 
-                  const graph = new DijkstraGraph(undirected);
-                  const res = await graph.dijkstra(cyRef.current!, start, end);
-                  const newEdges = [...undirected];
-                  console.log(res);
-                  for (let i = 0; i < res.length - 1; i++) {
-                    for (let j = 0; j < newEdges.length; j++) {
-                      if ((
-                        newEdges[j].from === res[i][0] &&
-                        newEdges[j].to === res[i + 1][0]
-                      ) || (
-                          newEdges[j].to === res[i][0] &&
-                          newEdges[j].from === res[i + 1][0]
-                        )) {
-                        newEdges[j].isHighlighted = true;
-                      }
+                const graph = new DijkstraGraph(undirected);
+                const res = await graph.dijkstra(cyRef.current!, start, end);
+                const newEdges = [...undirected];
+                var isNegative: Boolean = false;
+                console.log(res);
+                for (let i = 0; i < res.length - 1; i++) {
+                  for (let j = 0; j < newEdges.length; j++) {
+                    if (newEdges[j].weight < 0) {
+                      alert(
+                        "Weights can't be negative for Centralized Computation"
+                      );
+                      isNegative = true;
+                    }
+                    if (
+                      (newEdges[j].from === res[i][0] &&
+                        newEdges[j].to === res[i + 1][0]) ||
+                      (newEdges[j].to === res[i][0] &&
+                        newEdges[j].from === res[i + 1][0])
+                    ) {
+                      newEdges[j].isHighlighted = true;
                     }
                   }
+                }
+                if (!isNegative) {
                   setEdges(newEdges);
                 }
               }}
@@ -289,13 +379,14 @@ export const GraphUI: FC = () => {
             <label>Find shortest path</label>
             <Form.Field
             /**
-            * Select the start node for the path
-            */
+             * Select the start node for the path
+             */
             >
               <label>Starting node:</label>
-              <select name="start" defaultValue="" required onChange={() => {
-              }}>
-                <option value="" disabled>Select a node</option>
+              <select name="start" defaultValue="" required onChange={() => {}}>
+                <option value="" disabled>
+                  Select a node
+                </option>
                 {data.nodes.map((node) => (
                   <option key={node.data.id} value={node.data.id}>
                     {node.data.label}
@@ -308,16 +399,16 @@ export const GraphUI: FC = () => {
               </select>
             </Form.Field>
 
-
             <Form.Field
             /**
-            * Select the end node for the path
-            */
+             * Select the end node for the path
+             */
             >
               <label>Ending node:</label>
-              <select name="end" defaultValue="" required onChange={() => {
-              }}>
-                <option value="" disabled>Select a node</option>
+              <select name="end" defaultValue="" required onChange={() => {}}>
+                <option value="" disabled>
+                  Select a node
+                </option>
                 {data.nodes.map((node) => (
                   <option key={node.data.id} value={node.data.id}>
                     {node.data.label}
@@ -335,8 +426,8 @@ export const GraphUI: FC = () => {
 
         <Button
           /**
-          * Adds a new node to the graph
-          */
+           * Adds a new node to the graph
+           */
           onClick={() => {
             setNumberOfNodes(numberOfNodes + 1);
           }}
@@ -344,11 +435,10 @@ export const GraphUI: FC = () => {
           Add Node
         </Button>
 
-
         <Button
           /**
-          * Removes the last node in the graph
-          */
+           * Removes the last node in the graph
+           */
           onClick={() => {
             removeLastNode();
           }}
@@ -358,9 +448,9 @@ export const GraphUI: FC = () => {
 
         <Button
           /**
-          * Clear the entire graph
-          * nodes, edges included...
-          */
+           * Clear the entire graph
+           * nodes, edges included...
+           */
           onClick={() => clearGraph()}
         >
           Clear Graph
@@ -368,30 +458,24 @@ export const GraphUI: FC = () => {
 
         <Button
           /**
-          * Resets the graph back to its default layout
-          */
+           * Resets the graph back to its default layout
+           */
           onClick={() => resetGraph()}
         >
           Reset Graph
         </Button>
 
-
         <div style={{ border: "5px solid green", padding: "10px" }}>
           <Form
             /**
-            * Form for adding new edges to the graph
-            */
+             * Form for adding new edges to the graph
+             */
             onSubmit={(event) => {
               event.preventDefault();
-              const newEdges = [...edges];
-              newEdges.push({
-                from: event.currentTarget.from.value,
-                to: event.currentTarget.to.value,
-                weight: -1,
-                isCompliment: false,
-              });
-              setEdges(newEdges);
-
+              addEdges(
+                event.currentTarget.from.value,
+                event.currentTarget.to.value
+              );
               event.currentTarget.from.value = "";
               event.currentTarget.to.value = "";
             }}
@@ -399,9 +483,10 @@ export const GraphUI: FC = () => {
             <label>Add edge(Undirected):</label>
             <Form.Field>
               <label>From:</label>
-              <select name="from" defaultValue="" required onChange={() => {
-              }}>
-                <option value="" disabled>Select a node</option>
+              <select name="from" defaultValue="" required onChange={() => {}}>
+                <option value="" disabled>
+                  Select a node
+                </option>
                 {data.nodes.map((node) => (
                   <option key={node.data.id} value={node.data.id}>
                     {node.data.label}
@@ -411,13 +496,15 @@ export const GraphUI: FC = () => {
             </Form.Field>
 
             <Form.Field
-              /**
-              * Select the end node for the new edge
-              */>
+            /**
+             * Select the end node for the new edge
+             */
+            >
               <label>To:</label>
-              <select name="to" defaultValue="" required onChange={() => {
-              }}>
-                <option value="" disabled>Select a node</option>
+              <select name="to" defaultValue="" required onChange={() => {}}>
+                <option value="" disabled>
+                  Select a node
+                </option>
                 {data.nodes.map((node) => (
                   <option key={node.data.id} value={node.data.id}>
                     {node.data.label}
@@ -432,14 +519,13 @@ export const GraphUI: FC = () => {
         <div style={{ border: "5px solid red", padding: "10px" }}>
           <Form
             /**
-            * Form for removing edges from the graph
-            */
+             * Form for removing edges from the graph
+             */
             onSubmit={(event) => {
               event.preventDefault();
               const from = event.currentTarget.from.value;
               const to = event.currentTarget.to.value;
               removeEdge(from, to);
-
 
               event.currentTarget.from.value = "";
               event.currentTarget.to.value = "";
@@ -448,13 +534,14 @@ export const GraphUI: FC = () => {
             <label>Remove edge(undirected):</label>
             <Form.Field
             /**
-            * Select the start node for the edge to be removed
-            */
+             * Select the start node for the edge to be removed
+             */
             >
               <label>From:</label>
-              <select name="from" defaultValue="" required onChange={() => {
-              }}>
-                <option value="" disabled>Select a node</option>
+              <select name="from" defaultValue="" required onChange={() => {}}>
+                <option value="" disabled>
+                  Select a node
+                </option>
                 {data.nodes.map((node) => (
                   <option key={node.data.id} value={node.data.id}>
                     {node.data.label}
@@ -465,13 +552,14 @@ export const GraphUI: FC = () => {
 
             <Form.Field
             /**
-            * Select the end node for the edge to be removed
-            */
+             * Select the end node for the edge to be removed
+             */
             >
               <label>To:</label>
-              <select name="to" defaultValue="" required onChange={() => {
-              }}>
-                <option value="" disabled>Select a node</option>
+              <select name="to" defaultValue="" required onChange={() => {}}>
+                <option value="" disabled>
+                  Select a node
+                </option>
                 {data.nodes.map((node) => (
                   <option key={node.data.id} value={node.data.id}>
                     {node.data.label}
@@ -483,22 +571,25 @@ export const GraphUI: FC = () => {
           </Form>
         </div>
 
+
         <p>Edges(Undirected): </p>
-        {edges.filter(edge => edge.isCompliment === false).map((e, idx) => (
-          <EdgeDisplay
-            /**
-            * Display the edges on the canvas
-            */
-            edge={e}
-            defaultValue={e.weight.toString()}
-            onChange={(newWeight) => {
-              const newEdges = [...edges];
-              newEdges[idx].weight = Number(newWeight);
-              setReverseWeight(newEdges[idx], Number(newWeight));
-              setEdges(newEdges);
-            }}
-          />
-        ))}
+        {edges
+          .filter((edge) => edge.isCompliment === false)
+          .map((e, idx) => (
+            <EdgeDisplay
+              /**
+               * Display the edges on the canvas
+               */
+              edge={e}
+              defaultValue={e.weight.toString()}
+              onChange={(newWeight) => {
+                const newEdges = [...edges];
+                newEdges[idx].weight = Number(newWeight);
+                setReverseWeight(newEdges[idx], Number(newWeight));
+                setEdges(newEdges);
+              }}
+            />
+          ))}
       </StyledInnerDiv>
       <div
         style={{
@@ -507,12 +598,23 @@ export const GraphUI: FC = () => {
       >
         <CytoscapeComponent
           /**
-          * Create the Cytoscape canvas
-          */
+           * Create the Cytoscape canvas
+           */
           layout={layout}
           elements={CytoscapeComponent.normalizeElements(data)}
           style={{ width: "800px", height: "800px" }}
-          cy={(cy) => { cyRef.current = cy }}
+          cy={(cy) => {
+            cyRef.current = cy;
+
+            cy.on("tap", "node", (event) => {
+              const fromNode = cy.$(":selected");
+              const toNodeID = event.target.id();
+              if (!!fromNode) {
+                console.log(fromNode);
+                addEdges(fromNode.attr("id"), toNodeID);
+              }
+            });
+          }}
         />
       </div>
     </StyledDiv>
