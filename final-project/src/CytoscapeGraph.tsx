@@ -334,37 +334,30 @@ export const GraphUI: FC = () => {
                   removeAllHighlight()
                   setDijkstra(!isDijkstra)
 
-                cyRef.current!.nodes().forEach((node) => {
-                  node.style("background-color", "");
-                  return true;
-                });
-                const undirected = directedToUndirected(cyRef.current!);
-                setEdges(undirected);
+                  cyRef.current!.nodes().forEach((node) => {
+                    node.style("background-color", "");
+                    return true;
+                  });
+                  const undirected = directedToUndirected(cyRef.current!);
+                  setEdges(undirected);
 
-                const graph = new DijkstraGraph(undirected);
-                const res = await graph.dijkstra(cyRef.current!, start, end);
-                const newEdges = [...undirected];
-                var isNegative: Boolean = false;
-                console.log(res);
-                for (let i = 0; i < res.length - 1; i++) {
-                  for (let j = 0; j < newEdges.length; j++) {
-                    if (newEdges[j].weight < 0) {
-                      alert(
-                        "Weights can't be negative for Centralized Computation"
-                      );
-                      isNegative = true;
-                    }
-                    if (
-                      (newEdges[j].from === res[i][0] &&
-                        newEdges[j].to === res[i + 1][0]) ||
-                      (newEdges[j].to === res[i][0] &&
-                        newEdges[j].from === res[i + 1][0])
-                    ) {
-                      newEdges[j].isHighlighted = true;
+                  const graph = new DijkstraGraph(undirected);
+                  const res = await graph.dijkstra(cyRef.current!, start, end);
+                  const newEdges = [...undirected];
+                  var isNegative: Boolean = false;
+                  console.log(res);
+                  for (let i = 0; i < res.length - 1; i++) {
+                    for (let j = 0; j < newEdges.length; j++) {
+                      if (
+                        (newEdges[j].from === res[i][0] &&
+                          newEdges[j].to === res[i + 1][0]) ||
+                        (newEdges[j].to === res[i][0] &&
+                          newEdges[j].from === res[i + 1][0])
+                      ) {
+                        newEdges[j].isHighlighted = true;
+                      }
                     }
                   }
-                }
-                if (!isNegative) {
                   setEdges(newEdges);
                 }
               }}
@@ -381,7 +374,7 @@ export const GraphUI: FC = () => {
              */
             >
               <label>Starting node:</label>
-              <select name="start" defaultValue="" required onChange={() => {}}>
+              <select name="start" defaultValue="" required onChange={() => { }}>
                 <option value="" disabled>
                   Select a node
                 </option>
@@ -403,7 +396,7 @@ export const GraphUI: FC = () => {
              */
             >
               <label>Ending node:</label>
-              <select name="end" defaultValue="" required onChange={() => {}}>
+              <select name="end" defaultValue="" required onChange={() => { }}>
                 <option value="" disabled>
                   Select a node
                 </option>
@@ -481,7 +474,7 @@ export const GraphUI: FC = () => {
             <label>Add edge(Undirected):</label>
             <Form.Field>
               <label>From:</label>
-              <select name="from" defaultValue="" required onChange={() => {}}>
+              <select name="from" defaultValue="" required onChange={() => { }}>
                 <option value="" disabled>
                   Select a node
                 </option>
@@ -499,7 +492,7 @@ export const GraphUI: FC = () => {
              */
             >
               <label>To:</label>
-              <select name="to" defaultValue="" required onChange={() => {}}>
+              <select name="to" defaultValue="" required onChange={() => { }}>
                 <option value="" disabled>
                   Select a node
                 </option>
@@ -536,7 +529,7 @@ export const GraphUI: FC = () => {
              */
             >
               <label>From:</label>
-              <select name="from" defaultValue="" required onChange={() => {}}>
+              <select name="from" defaultValue="" required onChange={() => { }}>
                 <option value="" disabled>
                   Select a node
                 </option>
@@ -554,7 +547,7 @@ export const GraphUI: FC = () => {
              */
             >
               <label>To:</label>
-              <select name="to" defaultValue="" required onChange={() => {}}>
+              <select name="to" defaultValue="" required onChange={() => { }}>
                 <option value="" disabled>
                   Select a node
                 </option>
