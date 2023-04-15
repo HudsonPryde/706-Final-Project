@@ -97,25 +97,6 @@ export const GraphUI: FC = () => {
   };
 
   /**
-   * Removes the node and any edges connecting to that node
-   */
-  function removeNode(node: String) {
-    //var nodes = data.nodes;
-    //var lastNode = nodes.pop()?.data.id;
-
-    var newEdge = edges;
-    var removedEdge: Edge[] = [];
-    for (let i = 0; i < edges.length; i++) {
-      if (newEdge[i].from === node || newEdge[i].to === node) {
-        removedEdge.push(newEdge[i]);
-      }
-    }
-    newEdge = newEdge.filter(edge => removedEdge.indexOf(edge) < 0);
-    setEdges(newEdge)
-    setNumberOfNodes(numberOfNodes - 1);
-  }
-
-  /**
    * Removes the last node and any edges connecting to that node
    */
   function removeLastNode() {
@@ -204,7 +185,7 @@ export const GraphUI: FC = () => {
   return (
     <StyledDiv>
       <StyledInnerDiv>
-        <div style={{ border: "1px solid blue" }}>
+        <div style={{ border: "5px solid blue", padding: "10px" }}>
           <Form onSubmit={(event) => {
             event.preventDefault();
             const startNode = event.currentTarget.start.value;
@@ -309,7 +290,7 @@ export const GraphUI: FC = () => {
             */
             >
               <label>Starting node:</label>
-              <select name="start" defaultValue="" required onChange={(event) => {
+              <select name="start" defaultValue="" required onChange={() => {
               }}>
                 <option value="" disabled>Select a node</option>
                 {data.nodes.map((node) => (
@@ -331,7 +312,7 @@ export const GraphUI: FC = () => {
             */
             >
               <label>Ending node:</label>
-              <select name="end" defaultValue="" required onChange={(event) => {
+              <select name="end" defaultValue="" required onChange={() => {
               }}>
                 <option value="" disabled>Select a node</option>
                 {data.nodes.map((node) => (
@@ -392,7 +373,7 @@ export const GraphUI: FC = () => {
         </Button>
 
 
-        <div style={{ border: "1px solid red" }}>
+        <div style={{ border: "5px solid green", padding: "10px" }}>
           <Form
             /**
             * Form for adding new edges to the graph
@@ -415,7 +396,7 @@ export const GraphUI: FC = () => {
             <label>Add edge(Undirected):</label>
             <Form.Field>
               <label>From:</label>
-              <select name="from" defaultValue="" required onChange={(event) => {
+              <select name="from" defaultValue="" required onChange={() => {
               }}>
                 <option value="" disabled>Select a node</option>
                 {data.nodes.map((node) => (
@@ -431,7 +412,7 @@ export const GraphUI: FC = () => {
               * Select the end node for the new edge
               */>
               <label>To:</label>
-              <select name="to" defaultValue="" required onChange={(event) => {
+              <select name="to" defaultValue="" required onChange={() => {
               }}>
                 <option value="" disabled>Select a node</option>
                 {data.nodes.map((node) => (
@@ -445,7 +426,7 @@ export const GraphUI: FC = () => {
           </Form>
         </div>
 
-        <div style={{ border: "1px solid green" }}>
+        <div style={{ border: "5px solid red", padding: "10px" }}>
           <Form
             /**
             * Form for removing edges from the graph
@@ -461,14 +442,14 @@ export const GraphUI: FC = () => {
               event.currentTarget.to.value = "";
             }}
           >
-            <label>Remove edge:</label>
+            <label>Remove edge(undirected):</label>
             <Form.Field
               /**
               * Select the start node for the edge to be removed
               */
               >
               <label>From:</label>
-              <select name="from" defaultValue="" required onChange={(event) => {
+              <select name="from" defaultValue="" required onChange={() => {
               }}>
                 <option value="" disabled>Select a node</option>
                 {data.nodes.map((node) => (
@@ -485,7 +466,7 @@ export const GraphUI: FC = () => {
               */
               >
               <label>To:</label>
-              <select name="to" defaultValue="" required onChange={(event) => {
+              <select name="to" defaultValue="" required onChange={() => {
               }}>
                 <option value="" disabled>Select a node</option>
                 {data.nodes.map((node) => (
@@ -501,7 +482,7 @@ export const GraphUI: FC = () => {
         
         <p>Edges(Undirected): </p>
         {edges.filter(edge => edge.isCompliment === false).map((e, idx) => (
-          <EdgeDisplay
+          <EdgeDisplay 
             /**
             * Display the edges on the canvas
             */
