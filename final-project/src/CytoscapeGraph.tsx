@@ -120,8 +120,7 @@ export const GraphUI: FC = () => {
     var removedEdges: Edge[] = [];
     for (let i = 0; i < newEdge.length; i++) {
       if ((newEdge[i].from === from && newEdge[i].to === to)
-      || (newEdge[i].from === to && newEdge[i].to === from))
-      {
+        || (newEdge[i].from === to && newEdge[i].to === from)) {
         removedEdges.push(newEdge[i]);
       }
     }
@@ -203,17 +202,17 @@ export const GraphUI: FC = () => {
             }
             //Need to call setStart() or setEnd() on input change instead of this way
           }}>
-            <Button 
-                /**
-                * Compute the path using the decentralized algorithm
-                */
-                onClick={async (event) => {
+            <Button
+              /**
+              * Compute the path using the decentralized algorithm
+              */
+              onClick={async (event) => {
                 removeAllHighlight();
                 // clear node colors
                 cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
                 const undirected = directedToUndirected(cyRef.current!);
                 setEdges(undirected);
-                
+
                 const graph = new BellmansGraph(undirected);
                 const res = await graph.bellmanFord(cyRef.current!, start, end);
                 console.log(res);
@@ -237,46 +236,50 @@ export const GraphUI: FC = () => {
               Compute Decentralized
             </Button>
 
-
-            <Button 
+            <Button
               /**
               * Compute the path using the centralized algorithm
               */
               onClick={async (event) => {
-              removeAllHighlight()
+                var isNegative: Boolean = false;
 
-              setDijkstra(!isDijkstra)
-
-              cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
-              const undirected = directedToUndirected(cyRef.current!);
-              setEdges(undirected);
-
-              const graph = new DijkstraGraph(undirected);
-              const res = await graph.dijkstra(cyRef.current!, start, end);
-              const newEdges = [...undirected];
-              var isNegative: Boolean = false;
-              console.log(res);
-              for (let i = 0; i < res.length - 1; i++) {
-                for (let j = 0; j < newEdges.length; j++) {
-                  if (newEdges[j].weight < 0) {
-                    alert("Weights can't be negative for Centralized Computation")
+                for (let i = 0; i < edges.length; i++) {
+                  if (edges[i].weight < 0) {
                     isNegative = true;
-                  }
-                  if ((
-                    newEdges[j].from === res[i][0] &&
-                    newEdges[j].to === res[i + 1][0]
-                  ) || (
-                      newEdges[j].to === res[i][0] &&
-                      newEdges[j].from === res[i + 1][0]
-                    )) {
-                    newEdges[j].isHighlighted = true;
+                    break;
                   }
                 }
-              }
-              if (!isNegative) {
-                setEdges(newEdges);
-              }
-            }}
+                if (isNegative) {
+                  alert("Weights can't be negative for Centralized Computation");
+                }
+                else {
+                  removeAllHighlight()
+                  setDijkstra(!isDijkstra)
+
+                  cyRef.current!.nodes().forEach(((node) => { node.style('background-color', ''); return true; }));
+                  const undirected = directedToUndirected(cyRef.current!);
+                  setEdges(undirected);
+
+                  const graph = new DijkstraGraph(undirected);
+                  const res = await graph.dijkstra(cyRef.current!, start, end);
+                  const newEdges = [...undirected];
+                  console.log(res);
+                  for (let i = 0; i < res.length - 1; i++) {
+                    for (let j = 0; j < newEdges.length; j++) {
+                      if ((
+                        newEdges[j].from === res[i][0] &&
+                        newEdges[j].to === res[i + 1][0]
+                      ) || (
+                          newEdges[j].to === res[i][0] &&
+                          newEdges[j].from === res[i + 1][0]
+                        )) {
+                        newEdges[j].isHighlighted = true;
+                      }
+                    }
+                  }
+                  setEdges(newEdges);
+                }
+              }}
             >
               Compute Centralized
             </Button>
@@ -284,7 +287,7 @@ export const GraphUI: FC = () => {
             <br></br>
 
             <label>Find shortest path</label>
-            <Form.Field 
+            <Form.Field
             /**
             * Select the start node for the path
             */
@@ -444,10 +447,10 @@ export const GraphUI: FC = () => {
           >
             <label>Remove edge(undirected):</label>
             <Form.Field
-              /**
-              * Select the start node for the edge to be removed
-              */
-              >
+            /**
+            * Select the start node for the edge to be removed
+            */
+            >
               <label>From:</label>
               <select name="from" defaultValue="" required onChange={() => {
               }}>
@@ -461,10 +464,10 @@ export const GraphUI: FC = () => {
             </Form.Field>
 
             <Form.Field
-              /**
-              * Select the end node for the edge to be removed
-              */
-              >
+            /**
+            * Select the end node for the edge to be removed
+            */
+            >
               <label>To:</label>
               <select name="to" defaultValue="" required onChange={() => {
               }}>
@@ -479,10 +482,10 @@ export const GraphUI: FC = () => {
             <Button type="submit">Submit</Button>
           </Form>
         </div>
-        
+
         <p>Edges(Undirected): </p>
         {edges.filter(edge => edge.isCompliment === false).map((e, idx) => (
-          <EdgeDisplay 
+          <EdgeDisplay
             /**
             * Display the edges on the canvas
             */
