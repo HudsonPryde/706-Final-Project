@@ -43,10 +43,8 @@ export const GraphUI: FC = () => {
     if (!from || !to || from === to) {
       return;
     }
-    console.log("original: ", from, to);
     let isDuplicate = false;
     edges.forEach((e) => {
-      console.log(from, to);
       if (
         (e.from === from && e.to === to) ||
         (e.to === from && e.from === to)
@@ -610,7 +608,6 @@ export const GraphUI: FC = () => {
               const fromNode = cy.$(":selected");
               const toNodeID = event.target.id();
               if (!!fromNode) {
-                console.log(fromNode);
                 addEdges(fromNode.attr("id"), toNodeID);
               }
             });
